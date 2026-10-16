@@ -20,7 +20,7 @@ Production DevOps CI/CD Pipeline templates and infrastructure configurations for
 
 ## 🔋 Key Capabilities
 
-- 🤖 **Automated CI/CD Workflows**: Multi-stage testing, linting, and build steps.
+- 🤖 **Automated CI/CD Workflows**: Multi-stages testing, linting, and build steps.
 - 🐳 **Docker Containerization**: Multi-stage Dockerfile builds for optimized production images.
 - 🛡️ **Security Vulnerability Audits**: Automated dependency & secret vulnerability scanning.
 - ☁️ **Cloud Deployment Integration**: AWS / Kubernetes deployment pipeline manifests.
