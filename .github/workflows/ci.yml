@@ -18,9 +18,12 @@ jobs:
   validate-pipeline:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: Downloads/devops-pipelines-main
     strategy:
       matrix:
-        node-version: [20, 22]
+        node-version: [22, 24]
 
     steps:
       - name: Checkout Code
@@ -33,5 +36,11 @@ jobs:
           cache: npm
           cache-dependency-path: Downloads/devops-pipelines-main/package-lock.json
 
-      - name: Verify Workflow Files
-        run: echo "DevOps pipeline workflows validated successfully"
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check JavaScript syntax
+        run: npm run check
+
+      - name: Run project tests
+        run: npm test
