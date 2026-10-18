@@ -1,17 +1,24 @@
 {
   "name": "devops-pipelines",
   "version": "1.0.0",
-  "description": "",
+  "description": "A minimal Node.js example for learning CI/CD pipelines.",
   "main": "index.js",
   "scripts": {
     "run": "node index.js",
     "test": "node test.js"
   },
+  "engines": {
+    "node": ">=20"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/adrianhajdin/devops-pipelines.git"
   },
-  "keywords": [],
+  "keywords": [
+    "devops",
+    "ci-cd",
+    "github-actions"
+  ],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
