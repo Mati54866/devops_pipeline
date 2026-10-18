@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "run": "node index.js",
+    "check": "node --check index.js",
     "test": "node test.js"
   },
   "engines": {
