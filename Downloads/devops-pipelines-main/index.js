@@ -1,2 +1,18 @@
-console.log('Hello DevOps!');
-console.log("I'm learning CI/CD using GitHub Actions")
+function getMessages() {
+  return [
+    'Hello DevOps!',
+    "I'm learning CI/CD using GitHub Actions"
+  ];
+}
+
+function main() {
+  for (const message of getMessages()) {
+    console.log(message);
+  }
+}
+
+if (require.main === module) {
+  main();
+}
+
+module.exports = { getMessages };
