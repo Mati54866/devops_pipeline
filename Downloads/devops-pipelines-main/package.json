@@ -4,6 +4,7 @@
   "description": "A minimal Node.js example for learning CI/CD pipelines.",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "run": "node index.js",
     "check": "node --check index.js && node --check test.js",
     "test": "node --test"
