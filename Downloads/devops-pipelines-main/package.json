@@ -1,6 +1,7 @@
 {
   "name": "devops-pipelines",
   "version": "1.0.0",
+  "private": true,
   "description": "A minimal Node.js example for learning CI/CD pipelines.",
   "main": "index.js",
   "scripts": {
