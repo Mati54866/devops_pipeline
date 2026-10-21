@@ -47,6 +47,9 @@ jobs:
       - name: Check JavaScript syntax
         run: npm run check
 
+      - name: Verify package contents
+        run: npm pack --dry-run
+
       - name: Run application
         run: npm start
 
