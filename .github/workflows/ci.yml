@@ -21,12 +21,15 @@ jobs:
       run:
         working-directory: Downloads/devops-pipelines-main
     strategy:
+      fail-fast: false
       matrix:
         node-version: [22, 24]
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
