@@ -15,3 +15,7 @@ test('returns a fresh message list on each call', () => {
 
   assert.equal(getMessages().length, 2);
 });
+
+test('personalizes the greeting when a name is provided', () => {
+  assert.equal(getMessages('Ada')[0], 'Hello Ada!');
+});

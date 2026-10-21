@@ -1,6 +1,6 @@
-function getMessages() {
+function getMessages(name = 'DevOps') {
   return [
-    'Hello DevOps!',
+    `Hello ${name}!`,
     "I'm learning CI/CD using GitHub Actions"
   ];
 }
