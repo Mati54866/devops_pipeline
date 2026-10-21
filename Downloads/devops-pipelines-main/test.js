@@ -1,6 +1,6 @@
 const assert = require('node:assert/strict');
 const test = require('node:test');
-const { getMessages } = require('./index');
+const { getMessages, main } = require('./index');
 
 test('returns the DevOps greeting', () => {
   assert.deepEqual(getMessages(), [
@@ -18,4 +18,11 @@ test('returns a fresh message list on each call', () => {
 
 test('personalizes the greeting when a name is provided', () => {
   assert.equal(getMessages('Ada')[0], 'Hello Ada!');
+});
+
+test('accepts a name from the command line', () => {
+  const output = [];
+  main(['--name', 'Ada'], (message) => output.push(message));
+
+  assert.equal(output[0], 'Hello Ada!');
 });
