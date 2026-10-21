@@ -26,3 +26,10 @@ test('accepts a name from the command line', () => {
 
   assert.equal(output[0], 'Hello Ada!');
 });
+
+test('prints messages as JSON when requested', () => {
+  const output = [];
+  main(['--json'], (message) => output.push(message));
+
+  assert.deepEqual(JSON.parse(output[0]), getMessages());
+});

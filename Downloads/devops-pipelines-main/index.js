@@ -8,8 +8,14 @@ function getMessages(name = 'DevOps') {
 function main(argv = process.argv.slice(2), write = console.log) {
   const nameIndex = argv.indexOf('--name');
   const name = nameIndex === -1 ? 'DevOps' : argv[nameIndex + 1];
+  const messages = getMessages(name);
 
-  for (const message of getMessages(name)) {
+  if (argv.includes('--json')) {
+    write(JSON.stringify(messages));
+    return;
+  }
+
+  for (const message of messages) {
     write(message);
   }
 }
