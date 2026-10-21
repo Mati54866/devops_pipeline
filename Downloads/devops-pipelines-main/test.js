@@ -33,3 +33,21 @@ test('prints messages as JSON when requested', () => {
 
   assert.deepEqual(JSON.parse(output[0]), getMessages());
 });
+
+test('shows command usage when help is requested', () => {
+  const output = [];
+  assert.equal(main(['--help'], (message) => output.push(message)), 0);
+  assert.match(output[0], /^Usage:/);
+});
+
+test('rejects unknown options with a non-zero status', () => {
+  const errors = [];
+  assert.equal(main(['--unknown'], () => {}, (message) => errors.push(message)), 2);
+  assert.match(errors[0], /Unknown option/);
+});
+
+test('rejects a missing name value', () => {
+  const errors = [];
+  assert.equal(main(['--name'], () => {}, (message) => errors.push(message)), 2);
+  assert.match(errors[0], /requires a non-empty value/);
+});
