@@ -14,18 +14,18 @@ function main(
   let json = false;
 
   for (let index = 0; index < argv.length; index += 1) {
-    if (argv[index] === '--help') {
-      write('Usage: npm start [--name <name>] [--json] [--help]');
+    if (argv[index] === '--help' || argv[index] === '-h') {
+      write('Usage: npm start [--name|-n <name>] [--json|-j] [--help|-h]');
       return 0;
     }
 
-    if (argv[index] === '--json') {
+    if (argv[index] === '--json' || argv[index] === '-j') {
       json = true;
       continue;
     }
 
-    if (argv[index] === '--name' || argv[index].startsWith('--name=')) {
-      const value = argv[index] === '--name'
+    if (argv[index] === '--name' || argv[index] === '-n' || argv[index].startsWith('--name=')) {
+      const value = argv[index] === '--name' || argv[index] === '-n'
         ? argv[index + 1]
         : argv[index].slice('--name='.length);
       if (!value || value.startsWith('--')) {
@@ -33,7 +33,7 @@ function main(
         return 2;
       }
       name = value;
-      if (argv[index] === '--name') {
+      if (argv[index] === '--name' || argv[index] === '-n') {
         index += 1;
       }
       continue;

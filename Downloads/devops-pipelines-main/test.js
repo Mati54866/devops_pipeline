@@ -34,6 +34,19 @@ test('accepts an equals-form name option', () => {
   assert.equal(output[0], 'Hello Ada!');
 });
 
+test('supports short aliases for name, JSON, and help options', () => {
+  const output = [];
+  main(['-n', 'Ada', '-j'], (message) => output.push(message));
+  assert.deepEqual(JSON.parse(output[0]), [
+    'Hello Ada!',
+    "I'm learning CI/CD using GitHub Actions"
+  ]);
+
+  output.length = 0;
+  main(['-h'], (message) => output.push(message));
+  assert.match(output[0], /^Usage:/);
+});
+
 test('prints messages as JSON when requested', () => {
   const output = [];
   main(['--json'], (message) => output.push(message));
