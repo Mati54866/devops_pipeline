@@ -35,11 +35,12 @@ function main(
       const value = argv[index] === '--name' || argv[index] === '-n'
         ? argv[index + 1]
         : argv[index].slice('--name='.length);
-      if (!value || value.startsWith('--')) {
+      const normalizedValue = value && value.trim();
+      if (!normalizedValue || normalizedValue.startsWith('--')) {
         writeError('The --name option requires a non-empty value.');
         return 2;
       }
-      name = value;
+      name = normalizedValue;
       if (argv[index] === '--name' || argv[index] === '-n') {
         index += 1;
       }

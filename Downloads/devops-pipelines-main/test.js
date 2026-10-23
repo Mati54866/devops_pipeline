@@ -77,3 +77,13 @@ test('rejects a missing name value', () => {
   assert.equal(main(['--name'], () => {}, (message) => errors.push(message)), 2);
   assert.match(errors[0], /requires a non-empty value/);
 });
+
+test('trims names and rejects whitespace-only values', () => {
+  const output = [];
+  assert.equal(main(['--name', '  Ada  '], (message) => output.push(message)), 0);
+  assert.equal(output[0], 'Hello Ada!');
+
+  const errors = [];
+  assert.equal(main(['--name=   '], () => {}, (message) => errors.push(message)), 2);
+  assert.match(errors[0], /requires a non-empty value/);
+});
