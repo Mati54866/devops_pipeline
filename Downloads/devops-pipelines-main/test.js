@@ -60,6 +60,12 @@ test('shows command usage when help is requested', () => {
   assert.match(output[0], /^Usage:/);
 });
 
+test('prints the package version when requested', () => {
+  const output = [];
+  assert.equal(main(['--version'], (message) => output.push(message)), 0);
+  assert.match(output[0], /^\d+\.\d+\.\d+$/);
+});
+
 test('rejects unknown options with a non-zero status', () => {
   const errors = [];
   assert.equal(main(['--unknown'], () => {}, (message) => errors.push(message)), 2);

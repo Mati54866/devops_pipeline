@@ -1,3 +1,5 @@
+const packageJson = require('./package.json');
+
 function getMessages(name = 'DevOps') {
   return [
     `Hello ${name}!`,
@@ -14,8 +16,13 @@ function main(
   let json = false;
 
   for (let index = 0; index < argv.length; index += 1) {
+    if (argv[index] === '--version' || argv[index] === '-v') {
+      write(packageJson.version);
+      return 0;
+    }
+
     if (argv[index] === '--help' || argv[index] === '-h') {
-      write('Usage: npm start [--name|-n <name>] [--json|-j] [--help|-h]');
+      write('Usage: npm start [--name|-n <name>] [--json|-j] [--help|-h] [--version|-v]');
       return 0;
     }
 
