@@ -24,14 +24,18 @@ function main(
       continue;
     }
 
-    if (argv[index] === '--name') {
-      const value = argv[index + 1];
+    if (argv[index] === '--name' || argv[index].startsWith('--name=')) {
+      const value = argv[index] === '--name'
+        ? argv[index + 1]
+        : argv[index].slice('--name='.length);
       if (!value || value.startsWith('--')) {
         writeError('The --name option requires a non-empty value.');
         return 2;
       }
       name = value;
-      index += 1;
+      if (argv[index] === '--name') {
+        index += 1;
+      }
       continue;
     }
 

@@ -27,6 +27,13 @@ test('accepts a name from the command line', () => {
   assert.equal(output[0], 'Hello Ada!');
 });
 
+test('accepts an equals-form name option', () => {
+  const output = [];
+  main(['--name=Ada'], (message) => output.push(message));
+
+  assert.equal(output[0], 'Hello Ada!');
+});
+
 test('prints messages as JSON when requested', () => {
   const output = [];
   main(['--json'], (message) => output.push(message));
