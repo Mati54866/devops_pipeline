@@ -20,6 +20,21 @@ test('personalizes the greeting when a name is provided', () => {
   assert.equal(getMessages('Ada')[0], 'Hello Ada!');
 });
 
+test('appends custom messages in the order supplied', () => {
+  assert.deepEqual(getMessages('Ada', ['Build started', 'Deploy complete']), [
+    'Hello Ada!',
+    "I'm learning CI/CD using GitHub Actions",
+    'Build started',
+    'Deploy complete'
+  ]);
+});
+
+test('accepts repeated custom message options', () => {
+  const output = [];
+  assert.equal(main(['--message', 'Build started', '--message=Deploy complete'], (message) => output.push(message)), 0);
+  assert.deepEqual(output.slice(-2), ['Build started', 'Deploy complete']);
+});
+
 test('uses the greeting name from the environment by default', () => {
   const output = [];
   assert.equal(main([], (message) => output.push(message), () => {}, {

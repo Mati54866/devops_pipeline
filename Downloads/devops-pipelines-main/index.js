@@ -1,9 +1,10 @@
 const packageJson = require('./package.json');
 
-function getMessages(name = 'DevOps') {
+function getMessages(name = 'DevOps', extraMessages = []) {
   return [
     `Hello ${name}!`,
-    "I'm learning CI/CD using GitHub Actions"
+    "I'm learning CI/CD using GitHub Actions",
+    ...extraMessages
   ];
 }
 
@@ -15,6 +16,7 @@ function main(
 ) {
   let name = (env.DEVOPS_GREETING_NAME || '').trim() || 'DevOps';
   let format = 'text';
+  const extraMessages = [];
 
   for (let index = 0; index < argv.length; index += 1) {
     if (argv[index] === '--version' || argv[index] === '-v') {
@@ -47,6 +49,22 @@ function main(
       continue;
     }
 
+    if (argv[index] === '--message' || argv[index].startsWith('--message=')) {
+      const value = argv[index] === '--message'
+        ? argv[index + 1]
+        : argv[index].slice('--message='.length);
+      const normalizedValue = value && value.trim();
+      if (!normalizedValue || normalizedValue.startsWith('--')) {
+        writeError('The --message option requires a non-empty value.');
+        return 2;
+      }
+      extraMessages.push(normalizedValue);
+      if (argv[index] === '--message') {
+        index += 1;
+      }
+      continue;
+    }
+
     if (argv[index] === '--name' || argv[index] === '-n' || argv[index].startsWith('--name=')) {
       const value = argv[index] === '--name' || argv[index] === '-n'
         ? argv[index + 1]
@@ -67,7 +85,7 @@ function main(
     return 2;
   }
 
-  const messages = getMessages(name);
+  const messages = getMessages(name, extraMessages);
   if (format === 'json') {
     write(JSON.stringify(messages));
     return 0;
