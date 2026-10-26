@@ -10,9 +10,10 @@ function getMessages(name = 'DevOps') {
 function main(
   argv = process.argv.slice(2),
   write = console.log,
-  writeError = console.error
+  writeError = console.error,
+  env = process.env
 ) {
-  let name = 'DevOps';
+  let name = (env.DEVOPS_GREETING_NAME || '').trim() || 'DevOps';
   let format = 'text';
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -22,7 +23,7 @@ function main(
     }
 
     if (argv[index] === '--help' || argv[index] === '-h') {
-      write('Usage: npm start [--name|-n <name>] [--format <text|json>] [--json|-j] [--help|-h] [--version|-v]');
+      write('Usage: npm start [--name|-n <name>] [--format <text|json>] [--json|-j] [--help|-h] [--version|-v]\nSet DEVOPS_GREETING_NAME to configure the default name.');
       return 0;
     }
 

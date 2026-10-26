@@ -20,6 +20,22 @@ test('personalizes the greeting when a name is provided', () => {
   assert.equal(getMessages('Ada')[0], 'Hello Ada!');
 });
 
+test('uses the greeting name from the environment by default', () => {
+  const output = [];
+  assert.equal(main([], (message) => output.push(message), () => {}, {
+    DEVOPS_GREETING_NAME: 'Grace'
+  }), 0);
+  assert.equal(output[0], 'Hello Grace!');
+});
+
+test('command-line name overrides the environment default', () => {
+  const output = [];
+  assert.equal(main(['--name', 'Ada'], (message) => output.push(message), () => {}, {
+    DEVOPS_GREETING_NAME: 'Grace'
+  }), 0);
+  assert.equal(output[0], 'Hello Ada!');
+});
+
 test('accepts a name from the command line', () => {
   const output = [];
   main(['--name', 'Ada'], (message) => output.push(message));
