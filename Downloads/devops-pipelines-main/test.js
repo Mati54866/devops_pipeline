@@ -41,6 +41,12 @@ test('joins text output with a custom separator', () => {
   assert.equal(output[0], getMessages().join(' | '));
 });
 
+test('converts output to uppercase when requested', () => {
+  const output = [];
+  assert.equal(main(['--uppercase'], (message) => output.push(message)), 0);
+  assert.deepEqual(output, getMessages().map((message) => message.toUpperCase()));
+});
+
 test('uses the greeting name from the environment by default', () => {
   const output = [];
   assert.equal(main([], (message) => output.push(message), () => {}, {

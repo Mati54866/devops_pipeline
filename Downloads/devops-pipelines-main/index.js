@@ -17,6 +17,7 @@ function main(
   let name = (env.DEVOPS_GREETING_NAME || '').trim() || 'DevOps';
   let format = 'text';
   let separator;
+  let uppercase = false;
   const extraMessages = [];
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -80,6 +81,11 @@ function main(
       continue;
     }
 
+    if (argv[index] === '--uppercase') {
+      uppercase = true;
+      continue;
+    }
+
     if (argv[index] === '--name' || argv[index] === '-n' || argv[index].startsWith('--name=')) {
       const value = argv[index] === '--name' || argv[index] === '-n'
         ? argv[index + 1]
@@ -100,7 +106,9 @@ function main(
     return 2;
   }
 
-  const messages = getMessages(name, extraMessages);
+  const messages = getMessages(name, extraMessages).map((message) => (
+    uppercase ? message.toUpperCase() : message
+  ));
   if (format === 'json') {
     write(JSON.stringify(messages));
     return 0;
