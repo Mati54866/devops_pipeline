@@ -51,14 +51,11 @@ jobs:
       - name: Audit dependencies
         run: npm audit --audit-level=high
 
-      - name: Check JavaScript syntax
-        run: npm run check
-
       - name: Verify package contents
         run: npm pack --dry-run
 
       - name: Run application
         run: npm start
 
-      - name: Run project tests
-        run: npm test
+      - name: Validate project
+        run: npm run validate
