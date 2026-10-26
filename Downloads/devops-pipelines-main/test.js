@@ -35,6 +35,12 @@ test('accepts repeated custom message options', () => {
   assert.deepEqual(output.slice(-2), ['Build started', 'Deploy complete']);
 });
 
+test('joins text output with a custom separator', () => {
+  const output = [];
+  assert.equal(main(['--separator', ' | '], (message) => output.push(message)), 0);
+  assert.equal(output[0], getMessages().join(' | '));
+});
+
 test('uses the greeting name from the environment by default', () => {
   const output = [];
   assert.equal(main([], (message) => output.push(message), () => {}, {

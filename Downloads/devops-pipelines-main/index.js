@@ -16,6 +16,7 @@ function main(
 ) {
   let name = (env.DEVOPS_GREETING_NAME || '').trim() || 'DevOps';
   let format = 'text';
+  let separator;
   const extraMessages = [];
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -65,6 +66,20 @@ function main(
       continue;
     }
 
+    if (argv[index] === '--separator' || argv[index].startsWith('--separator=')) {
+      separator = argv[index] === '--separator'
+        ? argv[index + 1]
+        : argv[index].slice('--separator='.length);
+      if (separator === undefined || separator.startsWith('--')) {
+        writeError('The --separator option requires a value.');
+        return 2;
+      }
+      if (argv[index] === '--separator') {
+        index += 1;
+      }
+      continue;
+    }
+
     if (argv[index] === '--name' || argv[index] === '-n' || argv[index].startsWith('--name=')) {
       const value = argv[index] === '--name' || argv[index] === '-n'
         ? argv[index + 1]
@@ -88,6 +103,11 @@ function main(
   const messages = getMessages(name, extraMessages);
   if (format === 'json') {
     write(JSON.stringify(messages));
+    return 0;
+  }
+
+  if (separator !== undefined) {
+    write(messages.join(separator));
     return 0;
   }
 
