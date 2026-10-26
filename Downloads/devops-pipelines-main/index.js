@@ -13,7 +13,7 @@ function main(
   writeError = console.error
 ) {
   let name = 'DevOps';
-  let json = false;
+  let format = 'text';
 
   for (let index = 0; index < argv.length; index += 1) {
     if (argv[index] === '--version' || argv[index] === '-v') {
@@ -22,12 +22,27 @@ function main(
     }
 
     if (argv[index] === '--help' || argv[index] === '-h') {
-      write('Usage: npm start [--name|-n <name>] [--json|-j] [--help|-h] [--version|-v]');
+      write('Usage: npm start [--name|-n <name>] [--format <text|json>] [--json|-j] [--help|-h] [--version|-v]');
       return 0;
     }
 
     if (argv[index] === '--json' || argv[index] === '-j') {
-      json = true;
+      format = 'json';
+      continue;
+    }
+
+    if (argv[index] === '--format' || argv[index].startsWith('--format=')) {
+      const value = argv[index] === '--format'
+        ? argv[index + 1]
+        : argv[index].slice('--format='.length);
+      if (value !== 'text' && value !== 'json') {
+        writeError('The --format option must be "text" or "json".');
+        return 2;
+      }
+      format = value;
+      if (argv[index] === '--format') {
+        index += 1;
+      }
       continue;
     }
 
@@ -52,7 +67,7 @@ function main(
   }
 
   const messages = getMessages(name);
-  if (json) {
+  if (format === 'json') {
     write(JSON.stringify(messages));
     return 0;
   }

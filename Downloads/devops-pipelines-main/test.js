@@ -54,6 +54,22 @@ test('prints messages as JSON when requested', () => {
   assert.deepEqual(JSON.parse(output[0]), getMessages());
 });
 
+test('supports explicit text and JSON output formats', () => {
+  const text = [];
+  assert.equal(main(['--format=text'], (message) => text.push(message)), 0);
+  assert.deepEqual(text, getMessages());
+
+  const json = [];
+  assert.equal(main(['--format', 'json'], (message) => json.push(message)), 0);
+  assert.deepEqual(JSON.parse(json[0]), getMessages());
+});
+
+test('rejects unsupported output formats', () => {
+  const errors = [];
+  assert.equal(main(['--format', 'xml'], () => {}, (message) => errors.push(message)), 2);
+  assert.match(errors[0], /must be "text" or "json"/);
+});
+
 test('shows command usage when help is requested', () => {
   const output = [];
   assert.equal(main(['--help'], (message) => output.push(message)), 0);
