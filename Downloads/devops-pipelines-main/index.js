@@ -1,3 +1,4 @@
+const fs = require('node:fs');
 const packageJson = require('./package.json');
 
 function getMessages(name = 'DevOps', extraMessages = []) {
@@ -18,6 +19,7 @@ function main(
   let format = 'text';
   let separator;
   let uppercase = false;
+  let outputFile;
   const extraMessages = [];
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -46,6 +48,20 @@ function main(
       }
       format = value;
       if (argv[index] === '--format') {
+        index += 1;
+      }
+      continue;
+    }
+
+    if (argv[index] === '--output' || argv[index].startsWith('--output=')) {
+      outputFile = argv[index] === '--output'
+        ? argv[index + 1]
+        : argv[index].slice('--output='.length);
+      if (!outputFile || outputFile.startsWith('--')) {
+        writeError('The --output option requires a file path.');
+        return 2;
+      }
+      if (argv[index] === '--output') {
         index += 1;
       }
       continue;
@@ -110,7 +126,30 @@ function main(
     uppercase ? message.toUpperCase() : message
   ));
   if (format === 'json') {
-    write(JSON.stringify(messages));
+    const output = `${JSON.stringify(messages)}\n`;
+    if (outputFile) {
+      try {
+        fs.writeFileSync(outputFile, output, 'utf8');
+      } catch (error) {
+        writeError(`Unable to write output file "${outputFile}": ${error.message}`);
+        return 1;
+      }
+    } else {
+      write(output.trimEnd());
+    }
+    return 0;
+  }
+
+  if (outputFile) {
+    const output = separator === undefined
+      ? messages.join('\n')
+      : messages.join(separator);
+    try {
+      fs.writeFileSync(outputFile, `${output}\n`, 'utf8');
+    } catch (error) {
+      writeError(`Unable to write output file "${outputFile}": ${error.message}`);
+      return 1;
+    }
     return 0;
   }
 

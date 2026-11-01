@@ -1,4 +1,7 @@
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const os = require('node:os');
+const path = require('node:path');
 const test = require('node:test');
 const { getMessages, main } = require('./index');
 
@@ -95,6 +98,24 @@ test('prints messages as JSON when requested', () => {
   main(['--json'], (message) => output.push(message));
 
   assert.deepEqual(JSON.parse(output[0]), getMessages());
+});
+
+test('writes formatted output to a file instead of stdout', () => {
+  const outputPath = path.join(os.tmpdir(), `devops-output-${process.pid}.txt`);
+  const output = [];
+  try {
+    assert.equal(main(['--output', outputPath], (message) => output.push(message)), 0);
+    assert.deepEqual(output, []);
+    assert.equal(fs.readFileSync(outputPath, 'utf8'), `${getMessages().join('\n')}\n`);
+  } finally {
+    fs.rmSync(outputPath, { force: true });
+  }
+});
+
+test('reports output file write failures', () => {
+  const errors = [];
+  assert.equal(main(['--output', os.tmpdir()], () => {}, (message) => errors.push(message)), 1);
+  assert.match(errors[0], /Unable to write output file/);
 });
 
 test('supports explicit text and JSON output formats', () => {
