@@ -92,6 +92,21 @@ test('requires GITHUB_OUTPUT for GitHub Actions output mode', () => {
   assert.match(errors[0], /requires the GITHUB_OUTPUT/);
 });
 
+test('writes escaped messages to the GitHub Actions step summary', () => {
+  const summaryPath = path.join(os.tmpdir(), `devops-summary-${process.pid}.md`);
+  try {
+    assert.equal(main(['--message', '<Deploy>'], () => {}, () => {}, {
+      GITHUB_STEP_SUMMARY: summaryPath
+    }), 0);
+    const summary = fs.readFileSync(summaryPath, 'utf8');
+    assert.match(summary, /^## DevOps pipeline messages/m);
+    assert.ok(summary.includes('&lt;Deploy&gt;'));
+    assert.ok(!summary.includes('<Deploy>'));
+  } finally {
+    fs.rmSync(summaryPath, { force: true });
+  }
+});
+
 test('accepts a name from the command line', () => {
   const output = [];
   main(['--name', 'Ada'], (message) => output.push(message));

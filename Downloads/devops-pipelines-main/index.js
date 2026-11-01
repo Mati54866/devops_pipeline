@@ -10,6 +10,15 @@ function getMessages(name = 'DevOps', extraMessages = []) {
   ];
 }
 
+function escapeSummaryText(value) {
+  return value
+    .replace(/\r?\n/g, ' ')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/([\\`*_{}\[\]()#+.!|>~-])/g, '\\$1');
+}
+
 function main(
   argv = process.argv.slice(2),
   write = console.log,
@@ -83,6 +92,7 @@ function main(
   let outputFile;
   let append = false;
   let githubOutput = false;
+  let githubSummary = false;
   const extraMessages = [];
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -145,6 +155,11 @@ function main(
 
     if (argv[index] === '--github-output') {
       githubOutput = true;
+      continue;
+    }
+
+    if (argv[index] === '--github-summary') {
+      githubSummary = true;
       continue;
     }
 
@@ -229,25 +244,48 @@ function main(
   const messages = getMessages(name, [...(config.messages || []), ...extraMessages]).map((message) => (
     uppercase ? message.toUpperCase() : message
   ));
-  if (githubOutput) {
-    if (!env.GITHUB_OUTPUT) {
+  if (githubOutput || githubSummary) {
+    if (githubOutput && !env.GITHUB_OUTPUT) {
       writeError('The --github-output option requires the GITHUB_OUTPUT environment variable.');
       return 2;
     }
-    const delimiter = `DEVOPS_${crypto.randomBytes(16).toString('hex')}`;
-    const value = format === 'json'
-      ? JSON.stringify(messages)
-      : messages.join('\n');
-    try {
-      fs.appendFileSync(
-        env.GITHUB_OUTPUT,
-        `messages<<${delimiter}\n${value}\n${delimiter}\n`,
-        'utf8'
-      );
-    } catch (error) {
-      writeError(`Unable to write GitHub Actions output: ${error.message}`);
-      return 1;
+    if (githubSummary && !env.GITHUB_STEP_SUMMARY) {
+      writeError('The --github-summary option requires the GITHUB_STEP_SUMMARY environment variable.');
+      return 2;
     }
+
+    if (githubOutput) {
+      const delimiter = `DEVOPS_${crypto.randomBytes(16).toString('hex')}`;
+      const value = format === 'json'
+        ? JSON.stringify(messages)
+        : messages.join('\n');
+      try {
+        fs.appendFileSync(
+          env.GITHUB_OUTPUT,
+          `messages<<${delimiter}\n${value}\n${delimiter}\n`,
+          'utf8'
+        );
+      } catch (error) {
+        writeError(`Unable to write GitHub Actions output: ${error.message}`);
+        return 1;
+      }
+    }
+
+    if (githubSummary) {
+      const summary = [
+        '## DevOps pipeline messages',
+        '',
+        ...messages.map((message) => `- ${escapeSummaryText(message)}`),
+        ''
+      ].join('\n');
+      try {
+        fs.appendFileSync(env.GITHUB_STEP_SUMMARY, summary, 'utf8');
+      } catch (error) {
+        writeError(`Unable to write GitHub Actions summary: ${error.message}`);
+        return 1;
+      }
+    }
+
     return 0;
   }
 
