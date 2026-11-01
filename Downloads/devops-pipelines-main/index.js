@@ -20,6 +20,7 @@ function main(
   let separator;
   let uppercase = false;
   let outputFile;
+  let append = false;
   const extraMessages = [];
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -64,6 +65,11 @@ function main(
       if (argv[index] === '--output') {
         index += 1;
       }
+      continue;
+    }
+
+    if (argv[index] === '--append') {
+      append = true;
       continue;
     }
 
@@ -122,6 +128,15 @@ function main(
     return 2;
   }
 
+  if (append && !outputFile) {
+    writeError('The --append option requires --output.');
+    return 2;
+  }
+  if (append && format === 'json') {
+    writeError('The --append option requires text output.');
+    return 2;
+  }
+
   const messages = getMessages(name, extraMessages).map((message) => (
     uppercase ? message.toUpperCase() : message
   ));
@@ -145,7 +160,8 @@ function main(
       ? messages.join('\n')
       : messages.join(separator);
     try {
-      fs.writeFileSync(outputFile, `${output}\n`, 'utf8');
+      const writeOutput = append ? fs.appendFileSync : fs.writeFileSync;
+      writeOutput(outputFile, `${output}\n`, 'utf8');
     } catch (error) {
       writeError(`Unable to write output file "${outputFile}": ${error.message}`);
       return 1;

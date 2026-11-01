@@ -118,6 +118,26 @@ test('reports output file write failures', () => {
   assert.match(errors[0], /Unable to write output file/);
 });
 
+test('appends text output to an existing file', () => {
+  const outputPath = path.join(os.tmpdir(), `devops-append-${process.pid}.txt`);
+  try {
+    fs.writeFileSync(outputPath, 'Previous run\n', 'utf8');
+    assert.equal(main(['--output', outputPath, '--append'], () => {}), 0);
+    assert.equal(
+      fs.readFileSync(outputPath, 'utf8'),
+      `Previous run\n${getMessages().join('\n')}\n`
+    );
+  } finally {
+    fs.rmSync(outputPath, { force: true });
+  }
+});
+
+test('rejects append without an output file', () => {
+  const errors = [];
+  assert.equal(main(['--append'], () => {}, (message) => errors.push(message)), 2);
+  assert.match(errors[0], /requires --output/);
+});
+
 test('supports explicit text and JSON output formats', () => {
   const text = [];
   assert.equal(main(['--format=text'], (message) => text.push(message)), 0);
