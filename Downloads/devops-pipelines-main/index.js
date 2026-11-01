@@ -15,22 +15,89 @@ function main(
   writeError = console.error,
   env = process.env
 ) {
-  let name = (env.DEVOPS_GREETING_NAME || '').trim() || 'DevOps';
-  let format = 'text';
-  let separator;
-  let uppercase = false;
+  let configPath;
+  for (let index = 0; index < argv.length; index += 1) {
+    if (argv[index] === '--config' || argv[index].startsWith('--config=')) {
+      configPath = argv[index] === '--config'
+        ? argv[index + 1]
+        : argv[index].slice('--config='.length);
+      if (!configPath || configPath.startsWith('--')) {
+        writeError('The --config option requires a file path.');
+        return 2;
+      }
+      if (argv[index] === '--config') {
+        index += 1;
+      }
+    }
+  }
+
+  let config = {};
+  if (configPath) {
+    try {
+      config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+    } catch (error) {
+      writeError(`Unable to load config file "${configPath}": ${error.message}`);
+      return 1;
+    }
+    if (!config || Array.isArray(config) || typeof config !== 'object') {
+      writeError('The config file must contain a JSON object.');
+      return 2;
+    }
+    const allowedKeys = new Set(['name', 'messages', 'format', 'separator', 'uppercase']);
+    const unknownKeys = Object.keys(config).filter((key) => !allowedKeys.has(key));
+    if (unknownKeys.length > 0) {
+      writeError(`Unknown config option: ${unknownKeys[0]}`);
+      return 2;
+    }
+    if (config.name !== undefined && (typeof config.name !== 'string' || !config.name.trim())) {
+      writeError('Config option "name" must be a non-empty string.');
+      return 2;
+    }
+    if (config.messages !== undefined && (
+      !Array.isArray(config.messages)
+      || config.messages.some((message) => typeof message !== 'string' || !message.trim())
+    )) {
+      writeError('Config option "messages" must be an array of non-empty strings.');
+      return 2;
+    }
+    if (config.format !== undefined && !['text', 'json', 'ndjson'].includes(config.format)) {
+      writeError('Config option "format" must be "text", "json", or "ndjson".');
+      return 2;
+    }
+    if (config.separator !== undefined && typeof config.separator !== 'string') {
+      writeError('Config option "separator" must be a string.');
+      return 2;
+    }
+    if (config.uppercase !== undefined && typeof config.uppercase !== 'boolean') {
+      writeError('Config option "uppercase" must be a boolean.');
+      return 2;
+    }
+  }
+
+  let name = config.name?.trim() || (env.DEVOPS_GREETING_NAME || '').trim() || 'DevOps';
+  let format = config.format || 'text';
+  let separator = config.separator;
+  let uppercase = config.uppercase || false;
   let outputFile;
   let append = false;
   const extraMessages = [];
 
   for (let index = 0; index < argv.length; index += 1) {
+    if (argv[index] === '--config') {
+      index += 1;
+      continue;
+    }
+    if (argv[index].startsWith('--config=')) {
+      continue;
+    }
+
     if (argv[index] === '--version' || argv[index] === '-v') {
       write(packageJson.version);
       return 0;
     }
 
     if (argv[index] === '--help' || argv[index] === '-h') {
-      write('Usage: npm start [--name|-n <name>] [--format <text|json|ndjson>] [--json|-j] [--output <file>] [--append] [--help|-h] [--version|-v]\nSet DEVOPS_GREETING_NAME to configure the default name.');
+      write('Usage: npm start [--config <file>] [--name|-n <name>] [--format <text|json|ndjson>] [--json|-j] [--output <file>] [--append] [--help|-h] [--version|-v]\nSet DEVOPS_GREETING_NAME to configure the default name.');
       return 0;
     }
 
@@ -141,7 +208,7 @@ function main(
     return 2;
   }
 
-  const messages = getMessages(name, extraMessages).map((message) => (
+  const messages = getMessages(name, [...(config.messages || []), ...extraMessages]).map((message) => (
     uppercase ? message.toUpperCase() : message
   ));
   if (format === 'json' || format === 'ndjson') {

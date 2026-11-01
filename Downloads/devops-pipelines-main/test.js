@@ -112,6 +112,51 @@ test('writes formatted output to a file instead of stdout', () => {
   }
 });
 
+test('loads validated defaults from a JSON config file', () => {
+  const configPath = path.join(os.tmpdir(), `devops-config-${process.pid}.json`);
+  try {
+    fs.writeFileSync(configPath, JSON.stringify({
+      name: 'Grace',
+      messages: ['Deployment ready'],
+      format: 'text',
+      uppercase: true
+    }), 'utf8');
+    const output = [];
+    assert.equal(main(['--config', configPath], (message) => output.push(message)), 0);
+    assert.deepEqual(output, [
+      'HELLO GRACE!',
+      "I'M LEARNING CI/CD USING GITHUB ACTIONS",
+      'DEPLOYMENT READY'
+    ]);
+  } finally {
+    fs.rmSync(configPath, { force: true });
+  }
+});
+
+test('command-line options override config defaults', () => {
+  const configPath = path.join(os.tmpdir(), `devops-config-override-${process.pid}.json`);
+  try {
+    fs.writeFileSync(configPath, JSON.stringify({ name: 'Grace' }), 'utf8');
+    const output = [];
+    assert.equal(main(['--config', configPath, '--name', 'Ada'], (message) => output.push(message)), 0);
+    assert.equal(output[0], 'Hello Ada!');
+  } finally {
+    fs.rmSync(configPath, { force: true });
+  }
+});
+
+test('rejects unknown config keys', () => {
+  const configPath = path.join(os.tmpdir(), `devops-config-invalid-${process.pid}.json`);
+  try {
+    fs.writeFileSync(configPath, JSON.stringify({ unsupported: true }), 'utf8');
+    const errors = [];
+    assert.equal(main(['--config', configPath], () => {}, (message) => errors.push(message)), 2);
+    assert.match(errors[0], /Unknown config option/);
+  } finally {
+    fs.rmSync(configPath, { force: true });
+  }
+});
+
 test('reports output file write failures', () => {
   const errors = [];
   assert.equal(main(['--output', os.tmpdir()], () => {}, (message) => errors.push(message)), 1);
