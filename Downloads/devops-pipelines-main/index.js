@@ -13,7 +13,8 @@ function main(
   argv = process.argv.slice(2),
   write = console.log,
   writeError = console.error,
-  env = process.env
+  env = process.env,
+  readInput = () => fs.readFileSync(0, 'utf8')
 ) {
   let configPath;
   for (let index = 0; index < argv.length; index += 1) {
@@ -97,7 +98,7 @@ function main(
     }
 
     if (argv[index] === '--help' || argv[index] === '-h') {
-      write('Usage: npm start [--config <file>] [--name|-n <name>] [--format <text|json|ndjson>] [--json|-j] [--output <file>] [--append] [--help|-h] [--version|-v]\nSet DEVOPS_GREETING_NAME to configure the default name.');
+      write('Usage: npm start [--config <file>] [--name|-n <name|->] [--format <text|json|ndjson>] [--json|-j] [--output <file>] [--append] [--help|-h] [--version|-v]\nUse --name - to read the name from standard input. Set DEVOPS_GREETING_NAME to configure the default name.');
       return 0;
     }
 
@@ -144,7 +145,17 @@ function main(
       const value = argv[index] === '--message'
         ? argv[index + 1]
         : argv[index].slice('--message='.length);
-      const normalizedValue = value && value.trim();
+      let normalizedValue;
+      if (value === '-') {
+        try {
+          normalizedValue = readInput().trim();
+        } catch (error) {
+          writeError(`Unable to read the name from standard input: ${error.message}`);
+          return 1;
+        }
+      } else {
+        normalizedValue = value && value.trim();
+      }
       if (!normalizedValue || normalizedValue.startsWith('--')) {
         writeError('The --message option requires a non-empty value.');
         return 2;

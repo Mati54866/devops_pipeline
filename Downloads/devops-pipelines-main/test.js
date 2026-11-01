@@ -66,6 +66,12 @@ test('command-line name overrides the environment default', () => {
   assert.equal(output[0], 'Hello Ada!');
 });
 
+test('reads the name from standard input when requested', () => {
+  const output = [];
+  assert.equal(main(['--name', '-'], (message) => output.push(message), () => {}, {}, () => 'Ada\n'), 0);
+  assert.equal(output[0], 'Hello Ada!');
+});
+
 test('accepts a name from the command line', () => {
   const output = [];
   main(['--name', 'Ada'], (message) => output.push(message));
