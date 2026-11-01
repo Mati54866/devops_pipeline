@@ -1,3 +1,4 @@
+const crypto = require('node:crypto');
 const fs = require('node:fs');
 const packageJson = require('./package.json');
 
@@ -81,6 +82,7 @@ function main(
   let uppercase = config.uppercase || false;
   let outputFile;
   let append = false;
+  let githubOutput = false;
   const extraMessages = [];
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -138,6 +140,11 @@ function main(
 
     if (argv[index] === '--append') {
       append = true;
+      continue;
+    }
+
+    if (argv[index] === '--github-output') {
+      githubOutput = true;
       continue;
     }
 
@@ -222,6 +229,28 @@ function main(
   const messages = getMessages(name, [...(config.messages || []), ...extraMessages]).map((message) => (
     uppercase ? message.toUpperCase() : message
   ));
+  if (githubOutput) {
+    if (!env.GITHUB_OUTPUT) {
+      writeError('The --github-output option requires the GITHUB_OUTPUT environment variable.');
+      return 2;
+    }
+    const delimiter = `DEVOPS_${crypto.randomBytes(16).toString('hex')}`;
+    const value = format === 'json'
+      ? JSON.stringify(messages)
+      : messages.join('\n');
+    try {
+      fs.appendFileSync(
+        env.GITHUB_OUTPUT,
+        `messages<<${delimiter}\n${value}\n${delimiter}\n`,
+        'utf8'
+      );
+    } catch (error) {
+      writeError(`Unable to write GitHub Actions output: ${error.message}`);
+      return 1;
+    }
+    return 0;
+  }
+
   if (format === 'json' || format === 'ndjson') {
     const output = format === 'json'
       ? `${JSON.stringify(messages)}\n`

@@ -72,6 +72,26 @@ test('reads the name from standard input when requested', () => {
   assert.equal(output[0], 'Hello Ada!');
 });
 
+test('exports messages using the GitHub Actions output file protocol', () => {
+  const outputPath = path.join(os.tmpdir(), `devops-github-output-${process.pid}.txt`);
+  try {
+    assert.equal(main(['--github-output'], () => {}, () => {}, {
+      GITHUB_OUTPUT: outputPath
+    }), 0);
+    const output = fs.readFileSync(outputPath, 'utf8');
+    assert.match(output, /^messages<<DEVOPS_[a-f0-9]+\n/);
+    assert.ok(output.includes(getMessages().join('\n')));
+  } finally {
+    fs.rmSync(outputPath, { force: true });
+  }
+});
+
+test('requires GITHUB_OUTPUT for GitHub Actions output mode', () => {
+  const errors = [];
+  assert.equal(main(['--github-output'], () => {}, (message) => errors.push(message), {}), 2);
+  assert.match(errors[0], /requires the GITHUB_OUTPUT/);
+});
+
 test('accepts a name from the command line', () => {
   const output = [];
   main(['--name', 'Ada'], (message) => output.push(message));
