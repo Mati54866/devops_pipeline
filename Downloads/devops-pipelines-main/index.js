@@ -167,17 +167,7 @@ function main(
       const value = argv[index] === '--message'
         ? argv[index + 1]
         : argv[index].slice('--message='.length);
-      let normalizedValue;
-      if (value === '-') {
-        try {
-          normalizedValue = readInput().trim();
-        } catch (error) {
-          writeError(`Unable to read the name from standard input: ${error.message}`);
-          return 1;
-        }
-      } else {
-        normalizedValue = value && value.trim();
-      }
+      const normalizedValue = value && value.trim();
       if (!normalizedValue || normalizedValue.startsWith('--')) {
         writeError('The --message option requires a non-empty value.');
         return 2;
@@ -212,7 +202,17 @@ function main(
       const value = argv[index] === '--name' || argv[index] === '-n'
         ? argv[index + 1]
         : argv[index].slice('--name='.length);
-      const normalizedValue = value && value.trim();
+      let normalizedValue;
+      if (value === '-') {
+        try {
+          normalizedValue = readInput().trim();
+        } catch (error) {
+          writeError(`Unable to read the name from standard input: ${error.message}`);
+          return 1;
+        }
+      } else {
+        normalizedValue = value && value.trim();
+      }
       if (!normalizedValue || normalizedValue.startsWith('--')) {
         writeError('The --name option requires a non-empty value.');
         return 2;
