@@ -148,6 +148,12 @@ test('supports explicit text and JSON output formats', () => {
   assert.deepEqual(JSON.parse(json[0]), getMessages());
 });
 
+test('emits one JSON value per line in NDJSON format', () => {
+  const output = [];
+  assert.equal(main(['--format=ndjson'], (message) => output.push(message)), 0);
+  assert.deepEqual(output.map((line) => JSON.parse(line)), getMessages());
+});
+
 test('rejects unsupported output formats', () => {
   const errors = [];
   assert.equal(main(['--format', 'xml'], () => {}, (message) => errors.push(message)), 2);

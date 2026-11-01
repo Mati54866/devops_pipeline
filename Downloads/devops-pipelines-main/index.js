@@ -30,7 +30,7 @@ function main(
     }
 
     if (argv[index] === '--help' || argv[index] === '-h') {
-      write('Usage: npm start [--name|-n <name>] [--format <text|json>] [--json|-j] [--help|-h] [--version|-v]\nSet DEVOPS_GREETING_NAME to configure the default name.');
+      write('Usage: npm start [--name|-n <name>] [--format <text|json|ndjson>] [--json|-j] [--output <file>] [--append] [--help|-h] [--version|-v]\nSet DEVOPS_GREETING_NAME to configure the default name.');
       return 0;
     }
 
@@ -43,8 +43,8 @@ function main(
       const value = argv[index] === '--format'
         ? argv[index + 1]
         : argv[index].slice('--format='.length);
-      if (value !== 'text' && value !== 'json') {
-        writeError('The --format option must be "text" or "json".');
+      if (value !== 'text' && value !== 'json' && value !== 'ndjson') {
+        writeError('The --format option must be "text", "json", or "ndjson".');
         return 2;
       }
       format = value;
@@ -133,24 +133,33 @@ function main(
     return 2;
   }
   if (append && format === 'json') {
-    writeError('The --append option requires text output.');
+    writeError('The --append option requires text or ndjson output.');
+    return 2;
+  }
+  if (separator !== undefined && format !== 'text') {
+    writeError('The --separator option is only available with text output.');
     return 2;
   }
 
   const messages = getMessages(name, extraMessages).map((message) => (
     uppercase ? message.toUpperCase() : message
   ));
-  if (format === 'json') {
-    const output = `${JSON.stringify(messages)}\n`;
+  if (format === 'json' || format === 'ndjson') {
+    const output = format === 'json'
+      ? `${JSON.stringify(messages)}\n`
+      : `${messages.map((message) => JSON.stringify(message)).join('\n')}\n`;
     if (outputFile) {
       try {
-        fs.writeFileSync(outputFile, output, 'utf8');
+        const writeOutput = append ? fs.appendFileSync : fs.writeFileSync;
+        writeOutput(outputFile, output, 'utf8');
       } catch (error) {
         writeError(`Unable to write output file "${outputFile}": ${error.message}`);
         return 1;
       }
     } else {
-      write(output.trimEnd());
+      for (const line of output.trimEnd().split('\n')) {
+        write(line);
+      }
     }
     return 0;
   }
