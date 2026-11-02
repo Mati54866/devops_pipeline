@@ -120,6 +120,26 @@ test('requires GITHUB_OUTPUT for GitHub Actions output mode', () => {
   assert.match(errors[0], /requires the GITHUB_OUTPUT/);
 });
 
+test('rejects conflicting output destinations', () => {
+  const errors = [];
+  assert.equal(main(
+    ['--github-output', '--output', 'messages.txt'],
+    () => {},
+    (message) => errors.push(message),
+    { GITHUB_OUTPUT: 'github-output.txt' }
+  ), 2);
+  assert.match(errors[0], /cannot be combined with --output/);
+
+  errors.length = 0;
+  assert.equal(main(
+    ['--github-summary', '--append'],
+    () => {},
+    (message) => errors.push(message),
+    { GITHUB_STEP_SUMMARY: 'summary.md' }
+  ), 2);
+  assert.match(errors[0], /cannot be combined with GitHub Actions/);
+});
+
 test('writes escaped messages to the GitHub Actions step summary', () => {
   const summaryPath = path.join(os.tmpdir(), `devops-summary-${process.pid}.md`);
   try {

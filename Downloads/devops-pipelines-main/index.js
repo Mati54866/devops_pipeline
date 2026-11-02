@@ -240,6 +240,14 @@ function main(
     writeError('The --separator option is only available with text output.');
     return 2;
   }
+  if ((githubOutput || githubSummary) && outputFile) {
+    writeError('GitHub Actions output options cannot be combined with --output.');
+    return 2;
+  }
+  if ((githubOutput || githubSummary) && append) {
+    writeError('The --append option cannot be combined with GitHub Actions output options.');
+    return 2;
+  }
 
   const configuredMessages = (config.messages || []).map((message) => message.trim());
   const messages = getMessages(name, [...configuredMessages, ...extraMessages]).map((message) => (
