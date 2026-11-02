@@ -188,6 +188,18 @@ test('loads validated defaults from a JSON config file', () => {
   }
 });
 
+test('trims whitespace around configured messages', () => {
+  const configPath = path.join(os.tmpdir(), `devops-config-trim-${process.pid}.json`);
+  try {
+    fs.writeFileSync(configPath, JSON.stringify({ messages: ['  Deploy complete  '] }), 'utf8');
+    const output = [];
+    assert.equal(main(['--config', configPath], (message) => output.push(message)), 0);
+    assert.equal(output.at(-1), 'Deploy complete');
+  } finally {
+    fs.rmSync(configPath, { force: true });
+  }
+});
+
 test('command-line options override config defaults', () => {
   const configPath = path.join(os.tmpdir(), `devops-config-override-${process.pid}.json`);
   try {

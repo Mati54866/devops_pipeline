@@ -241,7 +241,8 @@ function main(
     return 2;
   }
 
-  const messages = getMessages(name, [...(config.messages || []), ...extraMessages]).map((message) => (
+  const configuredMessages = (config.messages || []).map((message) => message.trim());
+  const messages = getMessages(name, [...configuredMessages, ...extraMessages]).map((message) => (
     uppercase ? message.toUpperCase() : message
   ));
   if (githubOutput || githubSummary) {
