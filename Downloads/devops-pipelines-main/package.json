@@ -16,7 +16,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/adrianhajdin/devops-pipelines.git"
+    "url": "git+https://github.com/Mati54866/devops_pipeline.git"
   },
   "keywords": [
     "devops",
@@ -27,7 +27,7 @@
   "license": "ISC",
   "type": "commonjs",
   "bugs": {
-    "url": "https://github.com/adrianhajdin/devops-pipelines/issues"
+    "url": "https://github.com/Mati54866/devops_pipeline/issues"
   },
-  "homepage": "https://github.com/adrianhajdin/devops-pipelines#readme"
+  "homepage": "https://github.com/Mati54866/devops_pipeline"
 }
