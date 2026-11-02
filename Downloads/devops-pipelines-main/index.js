@@ -85,7 +85,7 @@ function main(
     }
   }
 
-  let name = config.name?.trim() || (env.DEVOPS_GREETING_NAME || '').trim() || 'DevOps';
+  let name = (env.DEVOPS_GREETING_NAME || '').trim() || config.name?.trim() || 'DevOps';
   let format = config.format || 'text';
   let separator = config.separator;
   let uppercase = config.uppercase || false;

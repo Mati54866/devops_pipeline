@@ -66,6 +66,20 @@ test('command-line name overrides the environment default', () => {
   assert.equal(output[0], 'Hello Ada!');
 });
 
+test('environment name overrides the config default', () => {
+  const configPath = path.join(os.tmpdir(), `devops-config-env-${process.pid}.json`);
+  try {
+    fs.writeFileSync(configPath, JSON.stringify({ name: 'Grace' }), 'utf8');
+    const output = [];
+    assert.equal(main(['--config', configPath], (message) => output.push(message), () => {}, {
+      DEVOPS_GREETING_NAME: 'Ada'
+    }), 0);
+    assert.equal(output[0], 'Hello Ada!');
+  } finally {
+    fs.rmSync(configPath, { force: true });
+  }
+});
+
 test('reads the name from standard input when requested', () => {
   const output = [];
   assert.equal(main(['--name', '-'], (message) => output.push(message), () => {}, {}, () => 'Ada\n'), 0);
