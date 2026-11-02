@@ -100,6 +100,20 @@ test('exports messages using the GitHub Actions output file protocol', () => {
   }
 });
 
+test('preserves NDJSON format in GitHub Actions outputs', () => {
+  const outputPath = path.join(os.tmpdir(), `devops-github-ndjson-${process.pid}.txt`);
+  try {
+    assert.equal(main(['--format=ndjson', '--github-output'], () => {}, () => {}, {
+      GITHUB_OUTPUT: outputPath
+    }), 0);
+    const output = fs.readFileSync(outputPath, 'utf8');
+    const value = output.split('\n').slice(1, -2);
+    assert.deepEqual(value.map((line) => JSON.parse(line)), getMessages());
+  } finally {
+    fs.rmSync(outputPath, { force: true });
+  }
+});
+
 test('requires GITHUB_OUTPUT for GitHub Actions output mode', () => {
   const errors = [];
   assert.equal(main(['--github-output'], () => {}, (message) => errors.push(message), {}), 2);

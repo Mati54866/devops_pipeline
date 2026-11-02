@@ -259,7 +259,9 @@ function main(
       const delimiter = `DEVOPS_${crypto.randomBytes(16).toString('hex')}`;
       const value = format === 'json'
         ? JSON.stringify(messages)
-        : messages.join('\n');
+        : format === 'ndjson'
+          ? messages.map((message) => JSON.stringify(message)).join('\n')
+          : messages.join(separator === undefined ? '\n' : separator);
       try {
         fs.appendFileSync(
           env.GITHUB_OUTPUT,
