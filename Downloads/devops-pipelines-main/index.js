@@ -1,7 +1,25 @@
 const crypto = require('node:crypto');
 const fs = require('node:fs');
 const packageJson = require('./package.json');
-const HELP_TEXT = 'Usage: npm start [--config <file>] [--name|-n <name|->] [--format <text|json|ndjson>] [--json|-j] [--output <file>] [--append] [--help|-h] [--version|-v]\nUse --name - to read the name from standard input. Set DEVOPS_GREETING_NAME to configure the default name.';
+const HELP_TEXT = [
+  'Usage: npm start [options]',
+  '',
+  '  -h, --help                 Show this help.',
+  '  -v, --version              Show the package version.',
+  '  --config <file>            Load JSON defaults for name, messages, format, separator, and uppercase.',
+  '  -n, --name <name|->        Set the greeting name; use - to read it from standard input.',
+  '  --message <text>           Add a message (repeatable).',
+  '  --format <format>          Select text, json, or ndjson output.',
+  '  -j, --json                 Shorthand for --format json.',
+  '  --separator <text>         Join text output with a custom separator.',
+  '  --uppercase                Convert output messages to uppercase.',
+  '  --output <file>            Write output to a file.',
+  '  --append                   Append output instead of replacing the file.',
+  '  --github-output            Write a messages output for GitHub Actions.',
+  '  --github-summary           Append a summary to the GitHub Actions step summary.',
+  '',
+  'DEVOPS_GREETING_NAME sets the default name; command-line options take precedence.'
+].join('\n');
 
 function getMessages(name = 'DevOps', extraMessages = []) {
   return [
