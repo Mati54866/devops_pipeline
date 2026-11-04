@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security vulnerability
+    url: https://github.com/Mati54866/devops_pipeline/security/advisories/new
+    about: Please report security concerns privately instead of posting them publicly.
