@@ -30,13 +30,17 @@ npm start -- --message "Build complete" --output run.log --append
 ```
 
 Use `--config <file>` to load JSON defaults for `name`, `messages`, `format`,
-`separator`, and `uppercase`. Explicit command-line options override defaults.
-Keep machine-specific configuration in `devops.config.local.json`; local
-configuration and environment files are ignored by Git.
+`separator`, and `uppercase`. A config file may only be specified once.
+Precedence is command-line options, then `DEVOPS_GREETING_NAME`, then config
+values, then built-in defaults. Keep machine-specific configuration in
+`devops.config.local.json`; local configuration and environment files are
+ignored by Git.
 
-The CLI also supports `--help`, `--version`, `--github-output`, and
-`--github-summary`. GitHub Actions options require their corresponding
-`GITHUB_OUTPUT` or `GITHUB_STEP_SUMMARY` environment variable.
+The CLI also supports `--help`, `--version`, text/JSON/NDJSON output,
+`--output`, `--append`, custom messages and separators, and uppercase output.
+`--help` lists every option. GitHub Actions integration uses `--github-output`
+and `--github-summary`; these require their corresponding `GITHUB_OUTPUT` or
+`GITHUB_STEP_SUMMARY` environment variable.
 
 ## Pull requests
 
