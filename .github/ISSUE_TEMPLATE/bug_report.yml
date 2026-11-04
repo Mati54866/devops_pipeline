@@ -1,0 +1,41 @@
+name: Bug report
+description: Report a reproducible problem with the example or CI workflows.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: Describe one issue per report. Do not include secrets or personal data.
+  - type: input
+    id: version
+    attributes:
+      label: Project revision
+      description: Commit hash or version where the issue occurs.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Include the command or workflow and the steps that trigger the issue.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment and relevant logs
+      description: Include OS and Node.js version. Remove secrets before sharing logs.
