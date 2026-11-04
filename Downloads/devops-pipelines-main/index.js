@@ -1,6 +1,7 @@
 const crypto = require('node:crypto');
 const fs = require('node:fs');
 const packageJson = require('./package.json');
+const HELP_TEXT = 'Usage: npm start [--config <file>] [--name|-n <name|->] [--format <text|json|ndjson>] [--json|-j] [--output <file>] [--append] [--help|-h] [--version|-v]\nUse --name - to read the name from standard input. Set DEVOPS_GREETING_NAME to configure the default name.';
 
 function getMessages(name = 'DevOps', extraMessages = []) {
   return [
@@ -26,6 +27,15 @@ function main(
   env = process.env,
   readInput = () => fs.readFileSync(0, 'utf8')
 ) {
+  if (argv.includes('--version') || argv.includes('-v')) {
+    write(packageJson.version);
+    return 0;
+  }
+  if (argv.includes('--help') || argv.includes('-h')) {
+    write(HELP_TEXT);
+    return 0;
+  }
+
   let configPath;
   for (let index = 0; index < argv.length; index += 1) {
     if (argv[index] === '--config' || argv[index].startsWith('--config=')) {
@@ -102,16 +112,6 @@ function main(
     }
     if (argv[index].startsWith('--config=')) {
       continue;
-    }
-
-    if (argv[index] === '--version' || argv[index] === '-v') {
-      write(packageJson.version);
-      return 0;
-    }
-
-    if (argv[index] === '--help' || argv[index] === '-h') {
-      write('Usage: npm start [--config <file>] [--name|-n <name|->] [--format <text|json|ndjson>] [--json|-j] [--output <file>] [--append] [--help|-h] [--version|-v]\nUse --name - to read the name from standard input. Set DEVOPS_GREETING_NAME to configure the default name.');
-      return 0;
     }
 
     if (argv[index] === '--json' || argv[index] === '-j') {
