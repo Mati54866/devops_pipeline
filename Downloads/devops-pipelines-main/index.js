@@ -55,8 +55,14 @@ function main(
   }
 
   let configPath;
+  let configOptionSeen = false;
   for (let index = 0; index < argv.length; index += 1) {
     if (argv[index] === '--config' || argv[index].startsWith('--config=')) {
+      if (configOptionSeen) {
+        writeError('The --config option can only be provided once.');
+        return 2;
+      }
+      configOptionSeen = true;
       configPath = argv[index] === '--config'
         ? argv[index + 1]
         : argv[index].slice('--config='.length);

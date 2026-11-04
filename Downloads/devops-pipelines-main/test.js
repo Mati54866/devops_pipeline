@@ -258,6 +258,16 @@ test('rejects unknown config keys', () => {
   }
 });
 
+test('rejects multiple config files as ambiguous', () => {
+  const errors = [];
+  assert.equal(main(
+    ['--config', 'first.json', '--config=second.json'],
+    () => {},
+    (message) => errors.push(message)
+  ), 2);
+  assert.match(errors[0], /can only be provided once/);
+});
+
 test('reports output file write failures', () => {
   const errors = [];
   assert.equal(main(['--output', os.tmpdir()], () => {}, (message) => errors.push(message)), 1);
