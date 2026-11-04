@@ -322,6 +322,16 @@ test('shows command usage when help is requested', () => {
   assert.match(output[0], /^Usage:/);
 });
 
+test('help and version work even when a config path is invalid', () => {
+  const help = [];
+  assert.equal(main(['--help', '--config', 'missing-config.json'], (message) => help.push(message)), 0);
+  assert.match(help[0], /--github-summary/);
+
+  const version = [];
+  assert.equal(main(['--config', 'missing-config.json', '--version'], (message) => version.push(message)), 0);
+  assert.match(version[0], /^\d+\.\d+\.\d+$/);
+});
+
 test('prints the package version when requested', () => {
   const output = [];
   assert.equal(main(['--version'], (message) => output.push(message)), 0);
