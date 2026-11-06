@@ -1,0 +1,10 @@
+{
+  "name": "CI",
+  "messages": [
+    "Build complete",
+    "Ready to deploy"
+  ],
+  "format": "text",
+  "separator": "\n",
+  "uppercase": false
+}

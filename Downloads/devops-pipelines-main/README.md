@@ -36,3 +36,18 @@ npm start -- --name Ada --message "Build started" --message "Deploy complete"
 ```
 
 Options after `--` are passed to the CLI.
+
+## JSON configuration
+
+Use `--config <file>` to load reusable defaults. The
+[`devops.config.example.json`](devops.config.example.json) file shows all
+supported settings:
+
+```sh
+npm start -- --config devops.config.example.json
+```
+
+Configuration files must contain a JSON object. The supported keys are
+`name`, `messages` (an array of non-empty strings), `format` (`text`, `json`,
+or `ndjson`), `separator` (text output only), and `uppercase` (a boolean).
+Unknown keys and invalid values are rejected with an error.
