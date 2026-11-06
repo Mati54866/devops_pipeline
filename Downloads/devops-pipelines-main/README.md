@@ -124,3 +124,15 @@ provides the required `GITHUB_OUTPUT` and `GITHUB_STEP_SUMMARY` paths:
 
 These options can be combined with `--format`, but not with `--output` or
 `--append`.
+
+## Troubleshooting
+
+- Run `npm start -- --help` to see the available options, or
+  `npm start -- --version` to print the package version.
+- An unknown option or invalid option value exits with status `2`. Check
+  option spelling and the required values.
+- A configuration or output-file read/write failure exits with status `1`.
+  Confirm the file exists where expected and that the process can access it.
+- `--append` needs `--output` and cannot be used with JSON array output.
+- GitHub Actions output modes require their runner-provided environment
+  variables; run those options from a workflow step.
