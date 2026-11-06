@@ -1,27 +1,33 @@
-# DevOps Pipeline
+<div align="center">
+  <br />
+  <h1 align="center">⚙️ DevOps CI/CD Pipeline Automation</h1>
+  <p align="center">Automated Build, Test, Security Scanning & Deployment Infrastructure</p>
 
-This repository contains a small Node.js command-line example and GitHub
-Actions workflows for practicing continuous integration and delivery. The
-example lives in [`Downloads/devops-pipelines-main`](Downloads/devops-pipelines-main)
-and demonstrates repeatable CI validation, dependency auditing, and static
-analysis.
+  <div>
+    <a href="https://github.com/Mati54866/devops_pipeline/actions"><img src="https://github.com/Mati54866/devops_pipeline/actions/workflows/ci.yml/badge.svg" alt="CI Status" /></a>
+    <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker" />
+    <img src="https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white" alt="GitHub Actions" />
+    <img src="https://img.shields.io/badge/AWS-232F3E?style=for-the-badge&logo=amazon-aws&logoColor=white" alt="AWS" />
+    <img src="https://img.shields.io/badge/Terraform-7B42BC?style=for-the-badge&logo=terraform&logoColor=white" alt="Terraform" />
+  </div>
+</div>
 
-The CLI can generate configurable text, JSON, or NDJSON messages and write
-them to standard output, files, or GitHub Actions output and summary files.
-See the [CLI guide](Downloads/devops-pipelines-main/README.md) for setup and
-examples.
+---
 
-## Repository automation
+## 📋 Overview
 
-- [CI workflow](.github/workflows/ci.yml): validates the example on Linux and
-  Windows with supported Node.js releases, audits dependencies, and checks
-  package contents.
-- [CodeQL workflow](.github/workflows/codeql.yml): analyzes the JavaScript
-  source.
-- [Dependency review](.github/workflows/dependency-review.yml): reviews
-  dependency changes in pull requests.
+Production DevOps CI/CD Pipeline templates and infrastructure configurations for automated testing, container security scanning, image building, and automated deployment pipelines.
 
-## Contributing
+## 🔋 Key Capabilities
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, CLI options,
-configuration precedence, and pull request guidance.
+- 🤖 **Automated CI/CD Workflows**: Multi-stages testing, linting, and build steps.
+- 🐳 **Docker Containerization**: Multi-stage Dockerfile builds for optimized production images.
+- 🛡️ **Security Vulnerability Audits**: Automated dependency & secret vulnerability scanning.
+- ☁️ **Cloud Deployment Integration**: AWS / Kubernetes deployment pipeline manifests.
+
+## 🚀 Usage
+
+```bash
+git clone https://github.com/Mati54866/devops_pipeline.git
+cd devops_pipeline
+```
