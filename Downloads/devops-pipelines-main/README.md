@@ -19,3 +19,20 @@ npm ci
 
 The CLI has no runtime dependencies; `npm ci` is useful for reproducing the
 project's package setup and running its development checks.
+
+## Quick start
+
+Run the default example:
+
+```sh
+npm start
+```
+
+Customize the greeting or add messages to a run:
+
+```sh
+npm start -- --name Ada
+npm start -- --name Ada --message "Build started" --message "Deploy complete"
+```
+
+Options after `--` are passed to the CLI.
