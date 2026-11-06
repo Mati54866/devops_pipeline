@@ -136,3 +136,18 @@ These options can be combined with `--format`, but not with `--output` or
 - `--append` needs `--output` and cannot be used with JSON array output.
 - GitHub Actions output modes require their runner-provided environment
   variables; run those options from a workflow step.
+
+## Development
+
+The project uses Node's built-in test runner and includes syntax and behavior
+checks:
+
+```sh
+npm run check
+npm test
+npm run validate
+```
+
+The CI workflow runs the validation on Linux and Windows across Node.js 22,
+24, and 26. See the repository's [contribution guide](../../CONTRIBUTING.md)
+for pull request expectations.
