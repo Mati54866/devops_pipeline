@@ -66,3 +66,24 @@ npm start -- --config devops.config.example.json --name Ada
 
 Machine-specific settings can go in `devops.config.local.json`; that filename
 is ignored by Git. Pass it explicitly with `--config`.
+
+## Output formats
+
+Text is the default output. JSON produces one array, while NDJSON produces
+one JSON-encoded message per line:
+
+```sh
+npm start -- --format text
+npm start -- --format json
+npm start -- --format ndjson
+```
+
+For text output, `--separator` joins the messages into one line, and
+`--uppercase` capitalizes each message:
+
+```sh
+npm start -- --separator " | "
+npm start -- --uppercase
+```
+
+The `--json` and `-j` options are shorthand for `--format json`.
