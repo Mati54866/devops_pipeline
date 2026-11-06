@@ -104,3 +104,23 @@ Provide `-` as the name to read it from standard input:
 ```sh
 printf "Ada\n" | npm start -- --name -
 ```
+
+## GitHub Actions integration
+
+The CLI can write a `messages` step output with `--github-output` and append a
+Markdown list to the job summary with `--github-summary`. GitHub Actions
+provides the required `GITHUB_OUTPUT` and `GITHUB_STEP_SUMMARY` paths:
+
+```yaml
+- name: Generate pipeline messages
+  id: messages
+  run: npm start -- --github-output --github-summary
+
+- name: Use the messages
+  env:
+    PIPELINE_MESSAGES: ${{ steps.messages.outputs.messages }}
+  run: printf '%s\n' "$PIPELINE_MESSAGES"
+```
+
+These options can be combined with `--format`, but not with `--output` or
+`--append`.
