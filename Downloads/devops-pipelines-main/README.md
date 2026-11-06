@@ -87,3 +87,20 @@ npm start -- --uppercase
 ```
 
 The `--json` and `-j` options are shorthand for `--format json`.
+
+## Files and standard input
+
+Use `--output` to write the result to a file instead of standard output.
+`--append` adds another run to an existing file; it requires `--output` and
+works with text or NDJSON, not JSON arrays.
+
+```sh
+npm start -- --output build-messages.txt
+npm start -- --format ndjson --output build-messages.ndjson --append
+```
+
+Provide `-` as the name to read it from standard input:
+
+```sh
+printf "Ada\n" | npm start -- --name -
+```
