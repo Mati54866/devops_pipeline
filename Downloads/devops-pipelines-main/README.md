@@ -51,3 +51,18 @@ Configuration files must contain a JSON object. The supported keys are
 `name`, `messages` (an array of non-empty strings), `format` (`text`, `json`,
 or `ndjson`), `separator` (text output only), and `uppercase` (a boolean).
 Unknown keys and invalid values are rejected with an error.
+
+## Environment and precedence
+
+Set `DEVOPS_GREETING_NAME` to provide a default name. For the name, values are
+selected in this order: `--name`, `DEVOPS_GREETING_NAME`, the config file's
+`name`, then `DevOps`. Command-line format and presentation options also
+override corresponding config values.
+
+```sh
+DEVOPS_GREETING_NAME=Grace npm start
+npm start -- --config devops.config.example.json --name Ada
+```
+
+Machine-specific settings can go in `devops.config.local.json`; that filename
+is ignored by Git. Pass it explicitly with `--config`.
