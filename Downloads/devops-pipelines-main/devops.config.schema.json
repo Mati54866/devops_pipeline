@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DevOps greeting configuration",
+  "description": "Configuration options accepted by the DevOps greeting CLI.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Default greeting name."
+    },
+    "messages": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": "Additional messages to include after the built-in messages."
+    },
+    "format": {
+      "type": "string",
+      "enum": ["text", "json", "ndjson"],
+      "default": "text"
+    },
+    "separator": {
+      "type": "string",
+      "description": "Separator used when joining text output."
+    },
+    "uppercase": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}
