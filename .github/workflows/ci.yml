@@ -98,5 +98,8 @@ jobs:
       - name: Run application
         run: npm start
 
+      - name: Render example configuration
+        run: npm run start:example
+
       - name: Validate project
         run: npm run validate
