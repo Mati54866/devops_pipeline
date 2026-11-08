@@ -7,6 +7,7 @@
   "scripts": {
     "start": "node index.js",
     "start:example": "node index.js --config devops.config.example.json",
+    "start:example:json": "node index.js --config devops.config.example.json --format json",
     "start:json": "node index.js --format json",
     "start:ndjson": "node index.js --format ndjson",
     "run": "node index.js",
