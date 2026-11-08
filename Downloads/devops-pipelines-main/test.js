@@ -80,6 +80,40 @@ test('environment name overrides the config default', () => {
   }
 });
 
+test('DEVOPS_CONFIG selects the config file when no CLI config is provided', () => {
+  const configPath = path.join(os.tmpdir(), `devops-config-env-path-${process.pid}.json`);
+  try {
+    fs.writeFileSync(configPath, JSON.stringify({ name: 'Grace' }), 'utf8');
+    const output = [];
+    assert.equal(main([], (message) => output.push(message), () => {}, {
+      DEVOPS_CONFIG: configPath
+    }), 0);
+    assert.equal(output[0], 'Hello Grace!');
+  } finally {
+    fs.rmSync(configPath, { force: true });
+  }
+});
+
+test('command-line config path overrides DEVOPS_CONFIG', () => {
+  const envConfigPath = path.join(os.tmpdir(), `devops-config-env-${process.pid}.json`);
+  const cliConfigPath = path.join(os.tmpdir(), `devops-config-cli-${process.pid}.json`);
+  try {
+    fs.writeFileSync(envConfigPath, JSON.stringify({ name: 'Grace' }), 'utf8');
+    fs.writeFileSync(cliConfigPath, JSON.stringify({ name: 'Ada' }), 'utf8');
+    const output = [];
+    assert.equal(main(
+      ['--config', cliConfigPath],
+      (message) => output.push(message),
+      () => {},
+      { DEVOPS_CONFIG: envConfigPath }
+    ), 0);
+    assert.equal(output[0], 'Hello Ada!');
+  } finally {
+    fs.rmSync(envConfigPath, { force: true });
+    fs.rmSync(cliConfigPath, { force: true });
+  }
+});
+
 test('reads the name from standard input when requested', () => {
   const output = [];
   assert.equal(main(['--name', '-'], (message) => output.push(message), () => {}, {}, () => 'Ada\n'), 0);
