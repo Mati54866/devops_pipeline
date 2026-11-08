@@ -7,6 +7,7 @@
   "scripts": {
     "start": "node index.js",
     "start:json": "node index.js --format json",
+    "start:ndjson": "node index.js --format ndjson",
     "run": "node index.js",
     "check": "node --check index.js && node --check test.js",
     "validate": "npm run check && npm test",
