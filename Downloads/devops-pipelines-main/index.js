@@ -54,7 +54,7 @@ function main(
     return 0;
   }
 
-  let configPath;
+  let configPath = (env.DEVOPS_CONFIG || '').trim() || undefined;
   let configOptionSeen = false;
   for (let index = 0; index < argv.length; index += 1) {
     if (argv[index] === '--config' || argv[index].startsWith('--config=')) {
