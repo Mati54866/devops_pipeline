@@ -154,7 +154,7 @@ function main(
   let uppercase = envUppercase
     ? envUppercase === 'true'
     : config.uppercase || false;
-  let outputFile;
+  let outputFile = (env.DEVOPS_OUTPUT || '').trim() || undefined;
   let append = false;
   let githubOutput = false;
   let githubSummary = false;
