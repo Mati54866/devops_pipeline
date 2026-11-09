@@ -13,6 +13,7 @@ const HELP_TEXT = [
   '  -j, --json                 Shorthand for --format json.',
   '  --separator <text>         Join text output with a custom separator.',
   '  --uppercase                Convert output messages to uppercase.',
+  '  --no-uppercase             Preserve message casing.',
   '  --output <file>            Write output to a file.',
   '  --append                   Append output instead of replacing the file.',
   '  --github-output            Write a messages output for GitHub Actions.',
@@ -233,6 +234,11 @@ function main(
 
     if (argv[index] === '--uppercase') {
       uppercase = true;
+      continue;
+    }
+
+    if (argv[index] === '--no-uppercase') {
+      uppercase = false;
       continue;
     }
 

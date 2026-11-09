@@ -50,6 +50,14 @@ test('converts output to uppercase when requested', () => {
   assert.deepEqual(output, getMessages().map((message) => message.toUpperCase()));
 });
 
+test('--no-uppercase overrides environment casing', () => {
+  const output = [];
+  assert.equal(main(['--no-uppercase'], (message) => output.push(message), () => {}, {
+    DEVOPS_UPPERCASE: 'true'
+  }), 0);
+  assert.deepEqual(output, getMessages());
+});
+
 test('uses the greeting name from the environment by default', () => {
   const output = [];
   assert.equal(main([], (message) => output.push(message), () => {}, {
