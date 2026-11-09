@@ -131,6 +131,22 @@ function main(
     writeError('DEVOPS_UPPERCASE must be "true" or "false".');
     return 2;
   }
+  let envMessages = [];
+  if (env.DEVOPS_MESSAGES !== undefined) {
+    try {
+      envMessages = JSON.parse(env.DEVOPS_MESSAGES);
+    } catch (error) {
+      writeError(`DEVOPS_MESSAGES must be a JSON array: ${error.message}`);
+      return 2;
+    }
+    if (!Array.isArray(envMessages) || envMessages.some(
+      (message) => typeof message !== 'string' || !message.trim()
+    )) {
+      writeError('DEVOPS_MESSAGES must be a JSON array of non-empty strings.');
+      return 2;
+    }
+    envMessages = envMessages.map((message) => message.trim());
+  }
   let format = envFormat || config.format || 'text';
   let separator = env.DEVOPS_SEPARATOR !== undefined
     ? env.DEVOPS_SEPARATOR
@@ -294,7 +310,11 @@ function main(
   }
 
   const configuredMessages = (config.messages || []).map((message) => message.trim());
-  const messages = getMessages(name, [...configuredMessages, ...extraMessages]).map((message) => (
+  const messages = getMessages(name, [
+    ...configuredMessages,
+    ...envMessages,
+    ...extraMessages
+  ]).map((message) => (
     uppercase ? message.toUpperCase() : message
   ));
   if (githubOutput || githubSummary) {
