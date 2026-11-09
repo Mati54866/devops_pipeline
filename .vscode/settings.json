@@ -2,8 +2,7 @@
   "json.schemas": [
     {
       "fileMatch": [
-        "Downloads/devops-pipelines-main/devops.config.example.json",
-        "Downloads/devops-pipelines-main/devops.config.local.json"
+        "Downloads/devops-pipelines-main/devops.config.*.json"
       ],
       "url": "../Downloads/devops-pipelines-main/devops.config.schema.json"
     }

@@ -31,10 +31,12 @@ npm start -- --message "Build complete" --output run.log --append
 
 Use `--config <file>` to load JSON defaults for `name`, `messages`, `format`,
 `separator`, and `uppercase`. A config file may only be specified once.
-Precedence is command-line options, then `DEVOPS_GREETING_NAME`, then config
-values, then built-in defaults. Set `DEVOPS_CONFIG` to select a config file
-without passing `--config`; the command-line option takes precedence. Keep
-machine-specific configuration in
+Precedence is command-line options, then environment variables, then config
+values, then built-in defaults. `DEVOPS_CONFIG` selects a config file when
+`--config` is not provided. `DEVOPS_FORMAT`, `DEVOPS_SEPARATOR`,
+`DEVOPS_UPPERCASE`, and `DEVOPS_MESSAGES` can set output defaults; messages
+must be a JSON array of non-empty strings. `DEVOPS_OUTPUT` selects a default
+output file, while `--output` takes precedence. Keep machine-specific configuration in
 `devops.config.local.json`; local configuration and environment files are
 ignored by Git.
 
