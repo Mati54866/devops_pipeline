@@ -108,6 +108,20 @@ test('DEVOPS_FORMAT overrides the format from config', () => {
   }
 });
 
+test('DEVOPS_SEPARATOR overrides the configured text separator', () => {
+  const configPath = path.join(os.tmpdir(), `devops-config-separator-${process.pid}.json`);
+  try {
+    fs.writeFileSync(configPath, JSON.stringify({ separator: ', ' }), 'utf8');
+    const output = [];
+    assert.equal(main(['--config', configPath], (message) => output.push(message), () => {}, {
+      DEVOPS_SEPARATOR: ' | '
+    }), 0);
+    assert.equal(output[0], getMessages().join(' | '));
+  } finally {
+    fs.rmSync(configPath, { force: true });
+  }
+});
+
 test('rejects unsupported DEVOPS_FORMAT values', () => {
   const errors = [];
   assert.equal(main([], () => {}, (message) => errors.push(message), {

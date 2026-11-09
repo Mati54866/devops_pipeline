@@ -126,7 +126,9 @@ function main(
     return 2;
   }
   let format = envFormat || config.format || 'text';
-  let separator = config.separator;
+  let separator = env.DEVOPS_SEPARATOR !== undefined
+    ? env.DEVOPS_SEPARATOR
+    : config.separator;
   let uppercase = config.uppercase || false;
   let outputFile;
   let append = false;
