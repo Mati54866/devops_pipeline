@@ -122,12 +122,28 @@ function main(
 
   let name = (env.DEVOPS_GREETING_NAME || '').trim() || config.name?.trim() || 'DevOps';
   const envFormat = (env.DEVOPS_FORMAT || '').trim();
-  if (envFormat && !['text', 'json', 'ndjson'].includes(envFormat)) {
+  const cliFormatProvided = argv.some((argument) => (
+    argument === '--json'
+    || argument === '-j'
+    || argument === '--format'
+    || argument.startsWith('--format=')
+  ));
+  if (
+    envFormat
+    && !['text', 'json', 'ndjson'].includes(envFormat)
+    && !cliFormatProvided
+  ) {
     writeError('DEVOPS_FORMAT must be "text", "json", or "ndjson".');
     return 2;
   }
   const envUppercase = (env.DEVOPS_UPPERCASE || '').trim().toLowerCase();
-  if (envUppercase && envUppercase !== 'true' && envUppercase !== 'false') {
+  const cliUppercaseProvided = argv.includes('--uppercase') || argv.includes('--no-uppercase');
+  if (
+    envUppercase
+    && envUppercase !== 'true'
+    && envUppercase !== 'false'
+    && !cliUppercaseProvided
+  ) {
     writeError('DEVOPS_UPPERCASE must be "true" or "false".');
     return 2;
   }
@@ -147,11 +163,13 @@ function main(
     }
     envMessages = envMessages.map((message) => message.trim());
   }
-  let format = envFormat || config.format || 'text';
+  let format = ['text', 'json', 'ndjson'].includes(envFormat)
+    ? envFormat
+    : config.format || 'text';
   let separator = env.DEVOPS_SEPARATOR !== undefined
     ? env.DEVOPS_SEPARATOR
     : config.separator;
-  let uppercase = envUppercase
+  let uppercase = envUppercase === 'true' || envUppercase === 'false'
     ? envUppercase === 'true'
     : config.uppercase || false;
   let outputFile = (env.DEVOPS_OUTPUT || '').trim() || undefined;
