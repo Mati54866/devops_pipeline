@@ -1,5 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Mati54866/devops_pipeline/blob/main/Downloads/devops-pipelines-main/devops.config.schema.json",
   "title": "DevOps greeting configuration",
   "description": "Configuration options accepted by the DevOps greeting CLI.",
   "type": "object",
@@ -8,13 +9,15 @@
     "name": {
       "type": "string",
       "minLength": 1,
+      "pattern": ".*\\S.*",
       "description": "Default greeting name."
     },
     "messages": {
       "type": "array",
       "items": {
         "type": "string",
-        "minLength": 1
+        "minLength": 1,
+        "pattern": ".*\\S.*"
       },
       "description": "Additional messages to include after the built-in messages."
     },
