@@ -120,7 +120,12 @@ function main(
   }
 
   let name = (env.DEVOPS_GREETING_NAME || '').trim() || config.name?.trim() || 'DevOps';
-  let format = config.format || 'text';
+  const envFormat = (env.DEVOPS_FORMAT || '').trim();
+  if (envFormat && !['text', 'json', 'ndjson'].includes(envFormat)) {
+    writeError('DEVOPS_FORMAT must be "text", "json", or "ndjson".');
+    return 2;
+  }
+  let format = envFormat || config.format || 'text';
   let separator = config.separator;
   let uppercase = config.uppercase || false;
   let outputFile;

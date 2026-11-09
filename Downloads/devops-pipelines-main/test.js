@@ -94,6 +94,28 @@ test('DEVOPS_CONFIG selects the config file when no CLI config is provided', () 
   }
 });
 
+test('DEVOPS_FORMAT overrides the format from config', () => {
+  const configPath = path.join(os.tmpdir(), `devops-config-format-${process.pid}.json`);
+  try {
+    fs.writeFileSync(configPath, JSON.stringify({ format: 'text' }), 'utf8');
+    const output = [];
+    assert.equal(main(['--config', configPath], (message) => output.push(message), () => {}, {
+      DEVOPS_FORMAT: 'json'
+    }), 0);
+    assert.deepEqual(JSON.parse(output[0]), getMessages());
+  } finally {
+    fs.rmSync(configPath, { force: true });
+  }
+});
+
+test('rejects unsupported DEVOPS_FORMAT values', () => {
+  const errors = [];
+  assert.equal(main([], () => {}, (message) => errors.push(message), {
+    DEVOPS_FORMAT: 'yaml'
+  }), 2);
+  assert.match(errors[0], /DEVOPS_FORMAT must be/);
+});
+
 test('command-line config path overrides DEVOPS_CONFIG', () => {
   const envConfigPath = path.join(os.tmpdir(), `devops-config-env-${process.pid}.json`);
   const cliConfigPath = path.join(os.tmpdir(), `devops-config-cli-${process.pid}.json`);
