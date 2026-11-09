@@ -130,6 +130,28 @@ test('rejects unsupported DEVOPS_FORMAT values', () => {
   assert.match(errors[0], /DEVOPS_FORMAT must be/);
 });
 
+test('DEVOPS_UPPERCASE overrides configured casing', () => {
+  const configPath = path.join(os.tmpdir(), `devops-config-uppercase-${process.pid}.json`);
+  try {
+    fs.writeFileSync(configPath, JSON.stringify({ uppercase: true }), 'utf8');
+    const output = [];
+    assert.equal(main(['--config', configPath], (message) => output.push(message), () => {}, {
+      DEVOPS_UPPERCASE: 'false'
+    }), 0);
+    assert.deepEqual(output, getMessages());
+  } finally {
+    fs.rmSync(configPath, { force: true });
+  }
+});
+
+test('rejects invalid DEVOPS_UPPERCASE values', () => {
+  const errors = [];
+  assert.equal(main([], () => {}, (message) => errors.push(message), {
+    DEVOPS_UPPERCASE: 'sometimes'
+  }), 2);
+  assert.match(errors[0], /DEVOPS_UPPERCASE must be/);
+});
+
 test('command-line config path overrides DEVOPS_CONFIG', () => {
   const envConfigPath = path.join(os.tmpdir(), `devops-config-env-${process.pid}.json`);
   const cliConfigPath = path.join(os.tmpdir(), `devops-config-cli-${process.pid}.json`);

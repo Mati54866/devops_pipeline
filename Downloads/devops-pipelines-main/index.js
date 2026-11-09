@@ -125,11 +125,18 @@ function main(
     writeError('DEVOPS_FORMAT must be "text", "json", or "ndjson".');
     return 2;
   }
+  const envUppercase = (env.DEVOPS_UPPERCASE || '').trim().toLowerCase();
+  if (envUppercase && envUppercase !== 'true' && envUppercase !== 'false') {
+    writeError('DEVOPS_UPPERCASE must be "true" or "false".');
+    return 2;
+  }
   let format = envFormat || config.format || 'text';
   let separator = env.DEVOPS_SEPARATOR !== undefined
     ? env.DEVOPS_SEPARATOR
     : config.separator;
-  let uppercase = config.uppercase || false;
+  let uppercase = envUppercase
+    ? envUppercase === 'true'
+    : config.uppercase || false;
   let outputFile;
   let append = false;
   let githubOutput = false;
