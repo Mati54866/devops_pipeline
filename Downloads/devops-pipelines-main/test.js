@@ -366,6 +366,21 @@ test('uses DEVOPS_OUTPUT as the default output file', () => {
   }
 });
 
+test('command-line output path overrides DEVOPS_OUTPUT', () => {
+  const envOutputPath = path.join(os.tmpdir(), `devops-output-env-priority-${process.pid}.txt`);
+  const cliOutputPath = path.join(os.tmpdir(), `devops-output-cli-priority-${process.pid}.txt`);
+  try {
+    assert.equal(main(['--output', cliOutputPath], () => {}, () => {}, {
+      DEVOPS_OUTPUT: envOutputPath
+    }), 0);
+    assert.equal(fs.readFileSync(cliOutputPath, 'utf8'), `${getMessages().join('\n')}\n`);
+    assert.equal(fs.existsSync(envOutputPath), false);
+  } finally {
+    fs.rmSync(envOutputPath, { force: true });
+    fs.rmSync(cliOutputPath, { force: true });
+  }
+});
+
 test('loads validated defaults from a JSON config file', () => {
   const configPath = path.join(os.tmpdir(), `devops-config-${process.pid}.json`);
   try {
