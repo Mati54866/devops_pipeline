@@ -155,6 +155,16 @@ test('rejects malformed DEVOPS_MESSAGES JSON', () => {
   assert.match(errors[0], /DEVOPS_MESSAGES must be a JSON array/);
 });
 
+test('rejects empty or non-string DEVOPS_MESSAGES entries', () => {
+  for (const value of ['[""]', '[42]', 'null']) {
+    const errors = [];
+    assert.equal(main([], () => {}, (message) => errors.push(message), {
+      DEVOPS_MESSAGES: value
+    }), 2);
+    assert.match(errors[0], /DEVOPS_MESSAGES must be a JSON array of non-empty strings/);
+  }
+});
+
 test('rejects unsupported DEVOPS_FORMAT values', () => {
   const errors = [];
   assert.equal(main([], () => {}, (message) => errors.push(message), {
