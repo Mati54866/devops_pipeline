@@ -482,6 +482,16 @@ test('rejects append without an output file', () => {
   assert.match(errors[0], /requires --output/);
 });
 
+test('rejects a separator with JSON output', () => {
+  const errors = [];
+  assert.equal(main(
+    ['--format', 'json', '--separator', ','],
+    () => {},
+    (message) => errors.push(message)
+  ), 2);
+  assert.match(errors[0], /only available with text output/);
+});
+
 test('supports explicit text and JSON output formats', () => {
   const text = [];
   assert.equal(main(['--format=text'], (message) => text.push(message)), 0);
