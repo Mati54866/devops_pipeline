@@ -147,6 +147,14 @@ test('DEVOPS_MESSAGES are appended between config and command-line messages', ()
   }
 });
 
+test('rejects malformed DEVOPS_MESSAGES JSON', () => {
+  const errors = [];
+  assert.equal(main([], () => {}, (message) => errors.push(message), {
+    DEVOPS_MESSAGES: '["unfinished"'
+  }), 2);
+  assert.match(errors[0], /DEVOPS_MESSAGES must be a JSON array/);
+});
+
 test('rejects unsupported DEVOPS_FORMAT values', () => {
   const errors = [];
   assert.equal(main([], () => {}, (message) => errors.push(message), {
