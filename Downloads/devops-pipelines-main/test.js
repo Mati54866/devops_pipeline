@@ -279,6 +279,17 @@ test('requires GITHUB_OUTPUT for GitHub Actions output mode', () => {
   assert.match(errors[0], /requires the GITHUB_OUTPUT/);
 });
 
+test('requires GITHUB_STEP_SUMMARY for summary output mode', () => {
+  const errors = [];
+  assert.equal(main(
+    ['--github-summary'],
+    () => {},
+    (message) => errors.push(message),
+    {}
+  ), 2);
+  assert.match(errors[0], /requires the GITHUB_STEP_SUMMARY/);
+});
+
 test('rejects conflicting output destinations', () => {
   const errors = [];
   assert.equal(main(
