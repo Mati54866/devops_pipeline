@@ -130,6 +130,14 @@ test('DEVOPS_SEPARATOR overrides the configured text separator', () => {
   }
 });
 
+test('DEVOPS_SEPARATOR joins text output when no config separator is set', () => {
+  const output = [];
+  assert.equal(main([], (message) => output.push(message), () => {}, {
+    DEVOPS_SEPARATOR: ' | '
+  }), 0);
+  assert.deepEqual(output, [getMessages().join(' | ')]);
+});
+
 test('DEVOPS_MESSAGES are appended between config and command-line messages', () => {
   const configPath = path.join(os.tmpdir(), `devops-config-messages-order-${process.pid}.json`);
   try {
