@@ -102,6 +102,14 @@ test('DEVOPS_CONFIG selects the config file when no CLI config is provided', () 
   }
 });
 
+test('reports failures when DEVOPS_CONFIG points to a missing file', () => {
+  const errors = [];
+  assert.equal(main([], () => {}, (message) => errors.push(message), {
+    DEVOPS_CONFIG: path.join(os.tmpdir(), `missing-devops-config-${process.pid}.json`)
+  }), 1);
+  assert.match(errors[0], /Unable to load config file/);
+});
+
 test('DEVOPS_FORMAT overrides the format from config', () => {
   const configPath = path.join(os.tmpdir(), `devops-config-format-${process.pid}.json`);
   try {
