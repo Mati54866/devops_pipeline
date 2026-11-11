@@ -352,6 +352,20 @@ test('writes formatted output to a file instead of stdout', () => {
   }
 });
 
+test('uses DEVOPS_OUTPUT as the default output file', () => {
+  const outputPath = path.join(os.tmpdir(), `devops-output-env-${process.pid}.txt`);
+  const output = [];
+  try {
+    assert.equal(main([], (message) => output.push(message), () => {}, {
+      DEVOPS_OUTPUT: outputPath
+    }), 0);
+    assert.deepEqual(output, []);
+    assert.equal(fs.readFileSync(outputPath, 'utf8'), `${getMessages().join('\n')}\n`);
+  } finally {
+    fs.rmSync(outputPath, { force: true });
+  }
+});
+
 test('loads validated defaults from a JSON config file', () => {
   const configPath = path.join(os.tmpdir(), `devops-config-${process.pid}.json`);
   try {
