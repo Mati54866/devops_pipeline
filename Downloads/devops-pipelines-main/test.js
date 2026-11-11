@@ -130,6 +130,23 @@ test('DEVOPS_SEPARATOR overrides the configured text separator', () => {
   }
 });
 
+test('DEVOPS_MESSAGES are appended between config and command-line messages', () => {
+  const configPath = path.join(os.tmpdir(), `devops-config-messages-order-${process.pid}.json`);
+  try {
+    fs.writeFileSync(configPath, JSON.stringify({ messages: ['From config'] }), 'utf8');
+    const output = [];
+    assert.equal(main(
+      ['--config', configPath, '--message', 'From CLI'],
+      (message) => output.push(message),
+      () => {},
+      { DEVOPS_MESSAGES: '["From environment"]' }
+    ), 0);
+    assert.deepEqual(output.slice(2), ['From config', 'From environment', 'From CLI']);
+  } finally {
+    fs.rmSync(configPath, { force: true });
+  }
+});
+
 test('rejects unsupported DEVOPS_FORMAT values', () => {
   const errors = [];
   assert.equal(main([], () => {}, (message) => errors.push(message), {
