@@ -457,6 +457,18 @@ test('rejects unknown config keys', () => {
   }
 });
 
+test('rejects non-object JSON config values', () => {
+  const configPath = path.join(os.tmpdir(), `devops-config-array-${process.pid}.json`);
+  try {
+    fs.writeFileSync(configPath, JSON.stringify(['not', 'an', 'object']), 'utf8');
+    const errors = [];
+    assert.equal(main(['--config', configPath], () => {}, (message) => errors.push(message)), 2);
+    assert.match(errors[0], /must contain a JSON object/);
+  } finally {
+    fs.rmSync(configPath, { force: true });
+  }
+});
+
 test('rejects multiple config files as ambiguous', () => {
   const errors = [];
   assert.equal(main(
