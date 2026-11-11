@@ -542,7 +542,7 @@ test('emits one JSON value per line in NDJSON format', () => {
 test('rejects unsupported output formats', () => {
   const errors = [];
   assert.equal(main(['--format', 'xml'], () => {}, (message) => errors.push(message)), 2);
-  assert.match(errors[0], /must be "text" or "json"/);
+  assert.match(errors[0], /must be "text", "json", or "ndjson"/);
 });
 
 test('shows command usage when help is requested', () => {
