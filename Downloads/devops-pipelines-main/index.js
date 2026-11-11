@@ -306,6 +306,14 @@ function main(
     return 2;
   }
 
+  if ((githubOutput || githubSummary) && outputFile) {
+    writeError('GitHub Actions output options cannot be combined with --output.');
+    return 2;
+  }
+  if ((githubOutput || githubSummary) && append) {
+    writeError('The --append option cannot be combined with GitHub Actions output options.');
+    return 2;
+  }
   if (append && !outputFile) {
     writeError('The --append option requires --output.');
     return 2;
@@ -316,14 +324,6 @@ function main(
   }
   if (separator !== undefined && format !== 'text') {
     writeError('The --separator option is only available with text output.');
-    return 2;
-  }
-  if ((githubOutput || githubSummary) && outputFile) {
-    writeError('GitHub Actions output options cannot be combined with --output.');
-    return 2;
-  }
-  if ((githubOutput || githubSummary) && append) {
-    writeError('The --append option cannot be combined with GitHub Actions output options.');
     return 2;
   }
 

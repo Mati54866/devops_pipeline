@@ -321,7 +321,7 @@ test('rejects conflicting output destinations', () => {
 test('writes escaped messages to the GitHub Actions step summary', () => {
   const summaryPath = path.join(os.tmpdir(), `devops-summary-${process.pid}.md`);
   try {
-    assert.equal(main(['--message', '<Deploy>'], () => {}, () => {}, {
+    assert.equal(main(['--github-summary', '--message', '<Deploy>'], () => {}, () => {}, {
       GITHUB_STEP_SUMMARY: summaryPath
     }), 0);
     const summary = fs.readFileSync(summaryPath, 'utf8');
