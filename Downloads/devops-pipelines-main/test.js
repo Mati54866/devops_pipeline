@@ -479,6 +479,20 @@ test('rejects invalid config name values', () => {
   }
 });
 
+test('rejects invalid config message arrays and entries', () => {
+  const configPath = path.join(os.tmpdir(), `devops-config-messages-invalid-${process.pid}.json`);
+  try {
+    for (const messages of ['not-an-array', [''], ['  '], [42]]) {
+      fs.writeFileSync(configPath, JSON.stringify({ messages }), 'utf8');
+      const errors = [];
+      assert.equal(main(['--config', configPath], () => {}, (message) => errors.push(message)), 2);
+      assert.match(errors[0], /Config option "messages" must be an array of non-empty strings/);
+    }
+  } finally {
+    fs.rmSync(configPath, { force: true });
+  }
+});
+
 test('rejects non-object JSON config values', () => {
   const configPath = path.join(os.tmpdir(), `devops-config-array-${process.pid}.json`);
   try {
