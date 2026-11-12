@@ -505,6 +505,18 @@ test('rejects unsupported config output formats', () => {
   }
 });
 
+test('rejects non-string config separators', () => {
+  const configPath = path.join(os.tmpdir(), `devops-config-separator-invalid-${process.pid}.json`);
+  try {
+    fs.writeFileSync(configPath, JSON.stringify({ separator: 42 }), 'utf8');
+    const errors = [];
+    assert.equal(main(['--config', configPath], () => {}, (message) => errors.push(message)), 2);
+    assert.match(errors[0], /Config option "separator" must be a string/);
+  } finally {
+    fs.rmSync(configPath, { force: true });
+  }
+});
+
 test('rejects non-object JSON config values', () => {
   const configPath = path.join(os.tmpdir(), `devops-config-array-${process.pid}.json`);
   try {
