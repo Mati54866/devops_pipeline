@@ -465,6 +465,20 @@ test('rejects unknown config keys', () => {
   }
 });
 
+test('rejects invalid config name values', () => {
+  const configPath = path.join(os.tmpdir(), `devops-config-name-invalid-${process.pid}.json`);
+  try {
+    for (const name of ['', '   ', 42]) {
+      fs.writeFileSync(configPath, JSON.stringify({ name }), 'utf8');
+      const errors = [];
+      assert.equal(main(['--config', configPath], () => {}, (message) => errors.push(message)), 2);
+      assert.match(errors[0], /Config option "name" must be a non-empty string/);
+    }
+  } finally {
+    fs.rmSync(configPath, { force: true });
+  }
+});
+
 test('rejects non-object JSON config values', () => {
   const configPath = path.join(os.tmpdir(), `devops-config-array-${process.pid}.json`);
   try {
