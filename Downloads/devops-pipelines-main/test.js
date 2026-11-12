@@ -591,6 +591,16 @@ test('rejects append without an output file', () => {
   assert.match(errors[0], /requires --output/);
 });
 
+test('rejects appending JSON array output', () => {
+  const errors = [];
+  assert.equal(main(
+    ['--format', 'json', '--output', 'messages.json', '--append'],
+    () => {},
+    (message) => errors.push(message)
+  ), 2);
+  assert.match(errors[0], /requires text or ndjson output/);
+});
+
 test('rejects a separator with JSON output', () => {
   const errors = [];
   assert.equal(main(
