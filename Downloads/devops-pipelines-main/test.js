@@ -347,6 +347,22 @@ test('writes escaped messages to the GitHub Actions step summary', () => {
   }
 });
 
+test('escapes Markdown syntax in GitHub Actions summaries', () => {
+  const summaryPath = path.join(os.tmpdir(), `devops-summary-markdown-${process.pid}.md`);
+  try {
+    assert.equal(main(
+      ['--github-summary', '--message', '*deploy* [run](url)'],
+      () => {},
+      () => {},
+      { GITHUB_STEP_SUMMARY: summaryPath }
+    ), 0);
+    const summary = fs.readFileSync(summaryPath, 'utf8');
+    assert.ok(summary.includes('\\*deploy\\* \\[run\\]\\(url\\)'));
+  } finally {
+    fs.rmSync(summaryPath, { force: true });
+  }
+});
+
 test('accepts a name from the command line', () => {
   const output = [];
   main(['--name', 'Ada'], (message) => output.push(message));
