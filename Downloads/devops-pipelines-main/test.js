@@ -379,6 +379,18 @@ test('writes formatted output to a file instead of stdout', () => {
   }
 });
 
+test('writes JSON output to a file without emitting stdout', () => {
+  const outputPath = path.join(os.tmpdir(), `devops-json-output-${process.pid}.json`);
+  const output = [];
+  try {
+    assert.equal(main(['--format', 'json', '--output', outputPath], (message) => output.push(message)), 0);
+    assert.deepEqual(output, []);
+    assert.deepEqual(JSON.parse(fs.readFileSync(outputPath, 'utf8')), getMessages());
+  } finally {
+    fs.rmSync(outputPath, { force: true });
+  }
+});
+
 test('uses DEVOPS_OUTPUT as the default output file', () => {
   const outputPath = path.join(os.tmpdir(), `devops-output-env-${process.pid}.txt`);
   const output = [];
