@@ -493,6 +493,18 @@ test('rejects invalid config message arrays and entries', () => {
   }
 });
 
+test('rejects unsupported config output formats', () => {
+  const configPath = path.join(os.tmpdir(), `devops-config-format-invalid-${process.pid}.json`);
+  try {
+    fs.writeFileSync(configPath, JSON.stringify({ format: 'yaml' }), 'utf8');
+    const errors = [];
+    assert.equal(main(['--config', configPath], () => {}, (message) => errors.push(message)), 2);
+    assert.match(errors[0], /Config option "format" must be "text", "json", or "ndjson"/);
+  } finally {
+    fs.rmSync(configPath, { force: true });
+  }
+});
+
 test('rejects non-object JSON config values', () => {
   const configPath = path.join(os.tmpdir(), `devops-config-array-${process.pid}.json`);
   try {
