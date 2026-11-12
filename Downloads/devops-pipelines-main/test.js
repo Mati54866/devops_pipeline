@@ -281,6 +281,20 @@ test('preserves NDJSON format in GitHub Actions outputs', () => {
   }
 });
 
+test('preserves JSON format in GitHub Actions outputs', () => {
+  const outputPath = path.join(os.tmpdir(), `devops-github-json-${process.pid}.txt`);
+  try {
+    assert.equal(main(['--format=json', '--github-output'], () => {}, () => {}, {
+      GITHUB_OUTPUT: outputPath
+    }), 0);
+    const output = fs.readFileSync(outputPath, 'utf8');
+    assert.match(output, /^messages<<DEVOPS_[a-f0-9]+\n/);
+    assert.deepEqual(JSON.parse(output.split('\n')[1]), getMessages());
+  } finally {
+    fs.rmSync(outputPath, { force: true });
+  }
+});
+
 test('requires GITHUB_OUTPUT for GitHub Actions output mode', () => {
   const errors = [];
   assert.equal(main(['--github-output'], () => {}, (message) => errors.push(message), {}), 2);
