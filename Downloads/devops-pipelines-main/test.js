@@ -507,6 +507,20 @@ test('appends text output to an existing file', () => {
   }
 });
 
+test('starts appended text output on a new line when the file has no final newline', () => {
+  const outputPath = path.join(os.tmpdir(), `devops-append-no-newline-${process.pid}.txt`);
+  try {
+    fs.writeFileSync(outputPath, 'Previous run', 'utf8');
+    assert.equal(main(['--output', outputPath, '--append'], () => {}), 0);
+    assert.equal(
+      fs.readFileSync(outputPath, 'utf8'),
+      `Previous run\n${getMessages().join('\n')}\n`
+    );
+  } finally {
+    fs.rmSync(outputPath, { force: true });
+  }
+});
+
 test('rejects append without an output file', () => {
   const errors = [];
   assert.equal(main(['--append'], () => {}, (message) => errors.push(message)), 2);

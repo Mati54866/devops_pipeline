@@ -39,6 +39,30 @@ function escapeSummaryText(value) {
     .replace(/([\\`*_{}\[\]()#+.!|>~-])/g, '\\$1');
 }
 
+function needsAppendLineBreak(filePath) {
+  let descriptor;
+  try {
+    descriptor = fs.openSync(filePath, 'r');
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      return false;
+    }
+    throw error;
+  }
+
+  try {
+    const size = fs.fstatSync(descriptor).size;
+    if (size === 0) {
+      return false;
+    }
+    const lastByte = Buffer.alloc(1);
+    fs.readSync(descriptor, lastByte, 0, 1, size - 1);
+    return lastByte[0] !== 0x0a;
+  } finally {
+    fs.closeSync(descriptor);
+  }
+}
+
 function main(
   argv = process.argv.slice(2),
   write = console.log,
@@ -408,7 +432,8 @@ function main(
       : messages.join(separator);
     try {
       const writeOutput = append ? fs.appendFileSync : fs.writeFileSync;
-      writeOutput(outputFile, `${output}\n`, 'utf8');
+      const lineBreak = append && needsAppendLineBreak(outputFile) ? '\n' : '';
+      writeOutput(outputFile, `${lineBreak}${output}\n`, 'utf8');
     } catch (error) {
       writeError(`Unable to write output file "${outputFile}": ${error.message}`);
       return 1;
