@@ -141,6 +141,14 @@ test('DEVOPS_FORMAT overrides the format from config', () => {
   }
 });
 
+test('CLI output format overrides a valid environment format', () => {
+  const output = [];
+  assert.equal(main(['--format', 'json'], (message) => output.push(message), () => {}, {
+    DEVOPS_FORMAT: 'ndjson'
+  }), 0);
+  assert.deepEqual(JSON.parse(output[0]), getMessages());
+});
+
 test('DEVOPS_SEPARATOR overrides the configured text separator', () => {
   const configPath = path.join(os.tmpdir(), `devops-config-separator-${process.pid}.json`);
   try {
