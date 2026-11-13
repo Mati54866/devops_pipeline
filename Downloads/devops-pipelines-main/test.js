@@ -436,6 +436,24 @@ test('escapes Markdown syntax in GitHub Actions summaries', () => {
   }
 });
 
+test('keeps multiline messages on one escaped GitHub summary bullet', () => {
+  const summaryPath = path.join(os.tmpdir(), `devops-summary-multiline-${process.pid}.md`);
+  try {
+    assert.equal(main(
+      ['--github-summary', '--message', '<Deploy>\nSecond line'],
+      () => {},
+      () => {},
+      { GITHUB_STEP_SUMMARY: summaryPath }
+    ), 0);
+    const summary = fs.readFileSync(summaryPath, 'utf8');
+    assert.ok(summary.includes('- &lt;Deploy&gt; Second line'));
+    assert.ok(!summary.includes('<Deploy>'));
+    assert.ok(!summary.includes('Deploy&gt;\nSecond line'));
+  } finally {
+    fs.rmSync(summaryPath, { force: true });
+  }
+});
+
 test('accepts a name from the command line', () => {
   const output = [];
   main(['--name', 'Ada'], (message) => output.push(message));
