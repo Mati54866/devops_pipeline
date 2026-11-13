@@ -723,6 +723,25 @@ test('rejects a separator with JSON output', () => {
   assert.match(errors[0], /only available with text output/);
 });
 
+test('rejects a configured separator with non-text output', () => {
+  const configPath = path.join(os.tmpdir(), `devops-config-separator-format-${process.pid}.json`);
+  try {
+    fs.writeFileSync(configPath, JSON.stringify({
+      format: 'json',
+      separator: ', '
+    }), 'utf8');
+    const errors = [];
+    assert.equal(main(
+      ['--config', configPath],
+      () => {},
+      (message) => errors.push(message)
+    ), 2);
+    assert.match(errors[0], /only available with text output/);
+  } finally {
+    fs.rmSync(configPath, { force: true });
+  }
+});
+
 test('supports explicit text and JSON output formats', () => {
   const text = [];
   assert.equal(main(['--format=text'], (message) => text.push(message)), 0);
