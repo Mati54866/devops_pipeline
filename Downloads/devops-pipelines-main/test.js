@@ -627,6 +627,18 @@ test('starts appended text output on a new line when the file has no final newli
   }
 });
 
+test('starts appended NDJSON output on a new line when the file has no final newline', () => {
+  const outputPath = path.join(os.tmpdir(), `devops-append-ndjson-${process.pid}.ndjson`);
+  try {
+    fs.writeFileSync(outputPath, '"Previous run"', 'utf8');
+    assert.equal(main(['--format', 'ndjson', '--output', outputPath, '--append'], () => {}), 0);
+    const records = fs.readFileSync(outputPath, 'utf8').trimEnd().split('\n').map(JSON.parse);
+    assert.deepEqual(records, ['Previous run', ...getMessages()]);
+  } finally {
+    fs.rmSync(outputPath, { force: true });
+  }
+});
+
 test('rejects append without an output file', () => {
   const errors = [];
   assert.equal(main(['--append'], () => {}, (message) => errors.push(message)), 2);

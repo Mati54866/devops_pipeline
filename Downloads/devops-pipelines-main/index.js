@@ -413,7 +413,10 @@ function main(
     if (outputFile) {
       try {
         const writeOutput = append ? fs.appendFileSync : fs.writeFileSync;
-        writeOutput(outputFile, output, 'utf8');
+        const lineBreak = append && format === 'ndjson' && needsAppendLineBreak(outputFile)
+          ? '\n'
+          : '';
+        writeOutput(outputFile, `${lineBreak}${output}`, 'utf8');
       } catch (error) {
         writeError(`Unable to write output file "${outputFile}": ${error.message}`);
         return 1;
