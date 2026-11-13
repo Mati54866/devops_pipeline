@@ -269,6 +269,14 @@ test('rejects invalid DEVOPS_UPPERCASE values', () => {
   assert.match(errors[0], /DEVOPS_UPPERCASE must be/);
 });
 
+test('parses DEVOPS_UPPERCASE values without case sensitivity', () => {
+  const output = [];
+  assert.equal(main([], (message) => output.push(message), () => {}, {
+    DEVOPS_UPPERCASE: 'TrUe'
+  }), 0);
+  assert.deepEqual(output, getMessages().map((message) => message.toUpperCase()));
+});
+
 test('CLI casing option overrides an invalid environment value', () => {
   const output = [];
   assert.equal(main(['--no-uppercase'], (message) => output.push(message), () => {}, {
