@@ -205,6 +205,14 @@ test('DEVOPS_MESSAGES are appended between config and command-line messages', ()
   }
 });
 
+test('trims whitespace around DEVOPS_MESSAGES entries', () => {
+  const output = [];
+  assert.equal(main([], (message) => output.push(message), () => {}, {
+    DEVOPS_MESSAGES: '["  Build complete  ","Deploy ready"]'
+  }), 0);
+  assert.deepEqual(output.slice(2), ['Build complete', 'Deploy ready']);
+});
+
 test('rejects malformed DEVOPS_MESSAGES JSON', () => {
   const errors = [];
   assert.equal(main([], () => {}, (message) => errors.push(message), {
