@@ -88,6 +88,23 @@ test('environment name overrides the config default', () => {
   }
 });
 
+test('whitespace-only environment name falls back to the config default', () => {
+  const configPath = path.join(os.tmpdir(), `devops-config-name-fallback-${process.pid}.json`);
+  try {
+    fs.writeFileSync(configPath, JSON.stringify({ name: 'Grace' }), 'utf8');
+    const output = [];
+    assert.equal(main(
+      ['--config', configPath],
+      (message) => output.push(message),
+      () => {},
+      { DEVOPS_GREETING_NAME: '   ' }
+    ), 0);
+    assert.equal(output[0], 'Hello Grace!');
+  } finally {
+    fs.rmSync(configPath, { force: true });
+  }
+});
+
 test('DEVOPS_CONFIG selects the config file when no CLI config is provided', () => {
   const configPath = path.join(os.tmpdir(), `devops-config-env-path-${process.pid}.json`);
   try {
