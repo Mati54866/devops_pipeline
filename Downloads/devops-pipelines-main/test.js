@@ -163,6 +163,23 @@ test('DEVOPS_SEPARATOR overrides the configured text separator', () => {
   }
 });
 
+test('CLI separator overrides environment and config defaults', () => {
+  const configPath = path.join(os.tmpdir(), `devops-config-separator-priority-${process.pid}.json`);
+  try {
+    fs.writeFileSync(configPath, JSON.stringify({ separator: ', ' }), 'utf8');
+    const output = [];
+    assert.equal(main(
+      ['--config', configPath, '--separator', ' | '],
+      (message) => output.push(message),
+      () => {},
+      { DEVOPS_SEPARATOR: '; ' }
+    ), 0);
+    assert.deepEqual(output, [getMessages().join(' | ')]);
+  } finally {
+    fs.rmSync(configPath, { force: true });
+  }
+});
+
 test('DEVOPS_SEPARATOR joins text output when no config separator is set', () => {
   const output = [];
   assert.equal(main([], (message) => output.push(message), () => {}, {
