@@ -405,6 +405,21 @@ test('writes escaped messages to the GitHub Actions step summary', () => {
   }
 });
 
+test('appends GitHub Actions summaries without replacing earlier content', () => {
+  const summaryPath = path.join(os.tmpdir(), `devops-summary-append-${process.pid}.md`);
+  try {
+    fs.writeFileSync(summaryPath, '# Earlier workflow output\n', 'utf8');
+    assert.equal(main(['--github-summary'], () => {}, () => {}, {
+      GITHUB_STEP_SUMMARY: summaryPath
+    }), 0);
+    const summary = fs.readFileSync(summaryPath, 'utf8');
+    assert.ok(summary.startsWith('# Earlier workflow output\n'));
+    assert.ok(summary.includes('## DevOps pipeline messages'));
+  } finally {
+    fs.rmSync(summaryPath, { force: true });
+  }
+});
+
 test('escapes Markdown syntax in GitHub Actions summaries', () => {
   const summaryPath = path.join(os.tmpdir(), `devops-summary-markdown-${process.pid}.md`);
   try {
