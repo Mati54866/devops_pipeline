@@ -351,6 +351,22 @@ test('exports messages using the GitHub Actions output file protocol', () => {
   }
 });
 
+test('appends GitHub Actions outputs without replacing existing values', () => {
+  const outputPath = path.join(os.tmpdir(), `devops-github-output-append-${process.pid}.txt`);
+  try {
+    fs.writeFileSync(outputPath, 'previous=value\n', 'utf8');
+    assert.equal(main(['--github-output'], () => {}, () => {}, {
+      GITHUB_OUTPUT: outputPath
+    }), 0);
+    const output = fs.readFileSync(outputPath, 'utf8');
+    assert.ok(output.startsWith('previous=value\n'));
+    assert.match(output, /messages<<DEVOPS_[a-f0-9]+\n/);
+    assert.ok(output.includes(getMessages().join('\n')));
+  } finally {
+    fs.rmSync(outputPath, { force: true });
+  }
+});
+
 test('preserves NDJSON format in GitHub Actions outputs', () => {
   const outputPath = path.join(os.tmpdir(), `devops-github-ndjson-${process.pid}.txt`);
   try {
