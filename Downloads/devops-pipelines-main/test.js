@@ -721,6 +721,18 @@ test('rejects unsupported config output formats', () => {
   }
 });
 
+test('rejects whitespace-only config format values', () => {
+  const configPath = path.join(os.tmpdir(), `devops-config-format-empty-${process.pid}.json`);
+  try {
+    fs.writeFileSync(configPath, JSON.stringify({ format: '   ' }), 'utf8');
+    const errors = [];
+    assert.equal(main(['--config', configPath], () => {}, (message) => errors.push(message)), 2);
+    assert.match(errors[0], /Config option "format" must be "text", "json", or "ndjson"/);
+  } finally {
+    fs.rmSync(configPath, { force: true });
+  }
+});
+
 test('rejects non-string config separators', () => {
   const configPath = path.join(os.tmpdir(), `devops-config-separator-invalid-${process.pid}.json`);
   try {
