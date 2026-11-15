@@ -44,6 +44,12 @@ test('trims whitespace around equals-form message options', () => {
   assert.equal(output.at(-1), 'Build complete');
 });
 
+test('rejects empty equals-form message options', () => {
+  const errors = [];
+  assert.equal(main(['--message='], () => {}, (message) => errors.push(message)), 2);
+  assert.match(errors[0], /requires a non-empty value/);
+});
+
 test('joins text output with a custom separator', () => {
   const output = [];
   assert.equal(main(['--separator', ' | '], (message) => output.push(message)), 0);
