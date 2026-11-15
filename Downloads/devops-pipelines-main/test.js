@@ -56,6 +56,12 @@ test('joins text output with a custom separator', () => {
   assert.equal(output[0], getMessages().join(' | '));
 });
 
+test('accepts an empty separator to concatenate text messages', () => {
+  const output = [];
+  assert.equal(main(['--separator='], (message) => output.push(message)), 0);
+  assert.deepEqual(output, [getMessages().join('')]);
+});
+
 test('converts output to uppercase when requested', () => {
   const output = [];
   assert.equal(main(['--uppercase'], (message) => output.push(message)), 0);
