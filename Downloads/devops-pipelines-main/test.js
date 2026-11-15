@@ -395,6 +395,27 @@ test('preserves JSON format in GitHub Actions outputs', () => {
   }
 });
 
+test('writes GitHub outputs and summaries in the same run', () => {
+  const outputPath = path.join(os.tmpdir(), `devops-github-combined-output-${process.pid}.txt`);
+  const summaryPath = path.join(os.tmpdir(), `devops-github-combined-summary-${process.pid}.md`);
+  try {
+    assert.equal(main(
+      ['--github-output', '--github-summary'],
+      () => {},
+      () => {},
+      {
+        GITHUB_OUTPUT: outputPath,
+        GITHUB_STEP_SUMMARY: summaryPath
+      }
+    ), 0);
+    assert.ok(fs.readFileSync(outputPath, 'utf8').includes('messages<<DEVOPS_'));
+    assert.ok(fs.readFileSync(summaryPath, 'utf8').includes('## DevOps pipeline messages'));
+  } finally {
+    fs.rmSync(outputPath, { force: true });
+    fs.rmSync(summaryPath, { force: true });
+  }
+});
+
 test('requires GITHUB_OUTPUT for GitHub Actions output mode', () => {
   const errors = [];
   assert.equal(main(['--github-output'], () => {}, (message) => errors.push(message), {}), 2);
