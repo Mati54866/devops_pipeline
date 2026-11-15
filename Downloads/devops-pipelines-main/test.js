@@ -669,6 +669,24 @@ test('command-line options override config defaults', () => {
   }
 });
 
+test('--no-uppercase overrides configured uppercase output', () => {
+  const configPath = path.join(os.tmpdir(), `devops-config-uppercase-cli-${process.pid}.json`);
+  try {
+    fs.writeFileSync(configPath, JSON.stringify({
+      name: 'Grace',
+      uppercase: true
+    }), 'utf8');
+    const output = [];
+    assert.equal(main(
+      ['--config', configPath, '--no-uppercase'],
+      (message) => output.push(message)
+    ), 0);
+    assert.deepEqual(output, getMessages('Grace'));
+  } finally {
+    fs.rmSync(configPath, { force: true });
+  }
+});
+
 test('rejects unknown config keys', () => {
   const configPath = path.join(os.tmpdir(), `devops-config-invalid-${process.pid}.json`);
   try {
