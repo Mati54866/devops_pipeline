@@ -38,6 +38,12 @@ test('accepts repeated custom message options', () => {
   assert.deepEqual(output.slice(-2), ['Build started', 'Deploy complete']);
 });
 
+test('trims whitespace around equals-form message options', () => {
+  const output = [];
+  assert.equal(main(['--message=  Build complete  '], (message) => output.push(message)), 0);
+  assert.equal(output.at(-1), 'Build complete');
+});
+
 test('joins text output with a custom separator', () => {
   const output = [];
   assert.equal(main(['--separator', ' | '], (message) => output.push(message)), 0);
