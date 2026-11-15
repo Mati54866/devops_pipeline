@@ -488,6 +488,14 @@ test('prints messages as JSON when requested', () => {
   assert.deepEqual(JSON.parse(output[0]), getMessages());
 });
 
+test('--json overrides the format from the environment', () => {
+  const output = [];
+  assert.equal(main(['--json'], (message) => output.push(message), () => {}, {
+    DEVOPS_FORMAT: 'ndjson'
+  }), 0);
+  assert.deepEqual(JSON.parse(output[0]), getMessages());
+});
+
 test('writes formatted output to a file instead of stdout', () => {
   const outputPath = path.join(os.tmpdir(), `devops-output-${process.pid}.txt`);
   const output = [];
