@@ -534,6 +534,18 @@ test('writes formatted output to a file instead of stdout', () => {
   }
 });
 
+test('accepts an equals-form output path', () => {
+  const outputPath = path.join(os.tmpdir(), `devops-output-equals-${process.pid}.txt`);
+  const output = [];
+  try {
+    assert.equal(main([`--output=${outputPath}`], (message) => output.push(message)), 0);
+    assert.deepEqual(output, []);
+    assert.equal(fs.readFileSync(outputPath, 'utf8'), `${getMessages().join('\n')}\n`);
+  } finally {
+    fs.rmSync(outputPath, { force: true });
+  }
+});
+
 test('writes JSON output to a file without emitting stdout', () => {
   const outputPath = path.join(os.tmpdir(), `devops-json-output-${process.pid}.json`);
   const output = [];
