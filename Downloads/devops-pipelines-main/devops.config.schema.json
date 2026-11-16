@@ -5,6 +5,23 @@
   "description": "Configuration options accepted by the DevOps greeting CLI.",
   "type": "object",
   "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "format": {
+            "enum": ["json", "ndjson"]
+          }
+        },
+        "required": ["format"]
+      },
+      "then": {
+        "not": {
+          "required": ["separator"]
+        }
+      }
+    }
+  ],
   "properties": {
     "name": {
       "type": "string",

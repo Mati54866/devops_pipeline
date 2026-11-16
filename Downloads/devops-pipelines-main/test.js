@@ -723,6 +723,12 @@ test('loads validated defaults from a JSON config file', () => {
   }
 });
 
+test('config schema disallows separators with JSON and NDJSON formats', () => {
+  const schema = JSON.parse(fs.readFileSync(path.join(__dirname, 'devops.config.schema.json'), 'utf8'));
+  assert.deepEqual(schema.allOf[0].if.properties.format.enum, ['json', 'ndjson']);
+  assert.deepEqual(schema.allOf[0].then.not.required, ['separator']);
+});
+
 test('validates a config file without generating greeting output', () => {
   const configPath = path.join(os.tmpdir(), `devops-config-check-${process.pid}.json`);
   const output = [];
