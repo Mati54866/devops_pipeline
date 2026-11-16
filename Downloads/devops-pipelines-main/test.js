@@ -1,4 +1,5 @@
 const assert = require('node:assert/strict');
+const { spawnSync } = require('node:child_process');
 const crypto = require('node:crypto');
 const fs = require('node:fs');
 const os = require('node:os');
@@ -18,6 +19,37 @@ test('returns a fresh message list on each call', () => {
   messages.pop();
 
   assert.equal(getMessages().length, 2);
+});
+
+test('CLI process emits output and preserves command exit codes', () => {
+  const entryPoint = path.join(__dirname, 'index.js');
+  const env = {
+    ...process.env,
+    DEVOPS_CONFIG: '',
+    DEVOPS_FORMAT: '',
+    DEVOPS_GREETING_NAME: '',
+    DEVOPS_MESSAGES: '',
+    DEVOPS_OUTPUT: '',
+    DEVOPS_SEPARATOR: '',
+    DEVOPS_UPPERCASE: ''
+  };
+  const successfulRun = spawnSync(
+    process.execPath,
+    [entryPoint, '--format', 'json'],
+    { encoding: 'utf8', env }
+  );
+  assert.equal(successfulRun.status, 0);
+  assert.deepEqual(JSON.parse(successfulRun.stdout), getMessages());
+  assert.equal(successfulRun.stderr, '');
+
+  const invalidRun = spawnSync(
+    process.execPath,
+    [entryPoint, '--format', 'unsupported'],
+    { encoding: 'utf8', env }
+  );
+  assert.equal(invalidRun.status, 2);
+  assert.equal(invalidRun.stdout, '');
+  assert.match(invalidRun.stderr, /The --format option must be/);
 });
 
 test('personalizes the greeting when a name is provided', () => {
