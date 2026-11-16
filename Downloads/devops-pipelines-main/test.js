@@ -28,11 +28,11 @@ test('CLI process emits output and preserves command exit codes', () => {
     DEVOPS_CONFIG: '',
     DEVOPS_FORMAT: '',
     DEVOPS_GREETING_NAME: '',
-    DEVOPS_MESSAGES: '',
+    DEVOPS_MESSAGES: '[]',
     DEVOPS_OUTPUT: '',
-    DEVOPS_SEPARATOR: '',
     DEVOPS_UPPERCASE: ''
   };
+  delete env.DEVOPS_SEPARATOR;
   const successfulRun = spawnSync(
     process.execPath,
     [entryPoint, '--format', 'json'],
