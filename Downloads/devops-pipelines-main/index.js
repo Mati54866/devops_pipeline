@@ -64,6 +64,14 @@ function needsAppendLineBreak(filePath) {
   }
 }
 
+function createOutputDelimiter(value) {
+  let delimiter;
+  do {
+    delimiter = `DEVOPS_${crypto.randomBytes(16).toString('hex')}`;
+  } while (value.split(/\r\n|\r|\n/).includes(delimiter));
+  return delimiter;
+}
+
 function main(
   argv = process.argv.slice(2),
   write = console.log,
@@ -391,13 +399,13 @@ function main(
     }
 
     if (githubOutput) {
-      const delimiter = `DEVOPS_${crypto.randomBytes(16).toString('hex')}`;
       const value = format === 'json'
         ? JSON.stringify(messages)
         : format === 'ndjson'
           ? messages.map((message) => JSON.stringify(message)).join('\n')
           : messages.join(separator === undefined ? '\n' : separator);
       try {
+        const delimiter = createOutputDelimiter(value);
         const lineBreak = needsAppendLineBreak(env.GITHUB_OUTPUT) ? '\n' : '';
         fs.appendFileSync(
           env.GITHUB_OUTPUT,

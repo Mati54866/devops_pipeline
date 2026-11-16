@@ -1,4 +1,5 @@
 const assert = require('node:assert/strict');
+const crypto = require('node:crypto');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
@@ -347,6 +348,29 @@ test('exports messages using the GitHub Actions output file protocol', () => {
     assert.match(output, /^messages<<DEVOPS_[a-f0-9]+\n/);
     assert.ok(output.includes(getMessages().join('\n')));
   } finally {
+    fs.rmSync(outputPath, { force: true });
+  }
+});
+
+test('avoids a GitHub Actions output delimiter contained in a message', () => {
+  const outputPath = path.join(os.tmpdir(), `devops-github-output-delimiter-${process.pid}.txt`);
+  const originalRandomBytes = crypto.randomBytes;
+  const firstDelimiter = `DEVOPS_${'aa'.repeat(16)}`;
+  const secondDelimiter = `DEVOPS_${'bb'.repeat(16)}`;
+  const randomValues = [Buffer.alloc(16, 0xaa), Buffer.alloc(16, 0xbb)];
+  try {
+    crypto.randomBytes = () => randomValues.shift();
+    assert.equal(main(
+      ['--github-output', '--message', `${firstDelimiter}\nDeploy complete`],
+      () => {},
+      () => {},
+      { GITHUB_OUTPUT: outputPath }
+    ), 0);
+    const output = fs.readFileSync(outputPath, 'utf8');
+    assert.ok(output.startsWith(`messages<<${secondDelimiter}\n`));
+    assert.ok(output.includes(`${firstDelimiter}\nDeploy complete`));
+  } finally {
+    crypto.randomBytes = originalRandomBytes;
     fs.rmSync(outputPath, { force: true });
   }
 });
