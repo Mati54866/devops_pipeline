@@ -498,6 +498,20 @@ test('appends GitHub Actions summaries without replacing earlier content', () =>
   }
 });
 
+test('starts appended GitHub Actions summaries on a new line', () => {
+  const summaryPath = path.join(os.tmpdir(), `devops-summary-no-newline-${process.pid}.md`);
+  try {
+    fs.writeFileSync(summaryPath, '# Earlier workflow output', 'utf8');
+    assert.equal(main(['--github-summary'], () => {}, () => {}, {
+      GITHUB_STEP_SUMMARY: summaryPath
+    }), 0);
+    const summary = fs.readFileSync(summaryPath, 'utf8');
+    assert.ok(summary.startsWith('# Earlier workflow output\n## DevOps pipeline messages'));
+  } finally {
+    fs.rmSync(summaryPath, { force: true });
+  }
+});
+
 test('escapes Markdown syntax in GitHub Actions summaries', () => {
   const summaryPath = path.join(os.tmpdir(), `devops-summary-markdown-${process.pid}.md`);
   try {

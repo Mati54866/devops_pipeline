@@ -418,7 +418,8 @@ function main(
         ''
       ].join('\n');
       try {
-        fs.appendFileSync(env.GITHUB_STEP_SUMMARY, summary, 'utf8');
+        const lineBreak = needsAppendLineBreak(env.GITHUB_STEP_SUMMARY) ? '\n' : '';
+        fs.appendFileSync(env.GITHUB_STEP_SUMMARY, `${lineBreak}${summary}`, 'utf8');
       } catch (error) {
         writeError(`Unable to write GitHub Actions summary: ${error.message}`);
         return 1;
