@@ -367,6 +367,21 @@ test('appends GitHub Actions outputs without replacing existing values', () => {
   }
 });
 
+test('starts appended GitHub Actions outputs on a new line', () => {
+  const outputPath = path.join(os.tmpdir(), `devops-github-output-no-newline-${process.pid}.txt`);
+  try {
+    fs.writeFileSync(outputPath, 'previous=value', 'utf8');
+    assert.equal(main(['--github-output'], () => {}, () => {}, {
+      GITHUB_OUTPUT: outputPath
+    }), 0);
+    const output = fs.readFileSync(outputPath, 'utf8');
+    assert.ok(output.startsWith('previous=value\nmessages<<DEVOPS_'));
+    assert.ok(output.includes(getMessages().join('\n')));
+  } finally {
+    fs.rmSync(outputPath, { force: true });
+  }
+});
+
 test('preserves NDJSON format in GitHub Actions outputs', () => {
   const outputPath = path.join(os.tmpdir(), `devops-github-ndjson-${process.pid}.txt`);
   try {

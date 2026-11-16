@@ -398,9 +398,10 @@ function main(
           ? messages.map((message) => JSON.stringify(message)).join('\n')
           : messages.join(separator === undefined ? '\n' : separator);
       try {
+        const lineBreak = needsAppendLineBreak(env.GITHUB_OUTPUT) ? '\n' : '';
         fs.appendFileSync(
           env.GITHUB_OUTPUT,
-          `messages<<${delimiter}\n${value}\n${delimiter}\n`,
+          `${lineBreak}messages<<${delimiter}\n${value}\n${delimiter}\n`,
           'utf8'
         );
       } catch (error) {
