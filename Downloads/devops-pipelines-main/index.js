@@ -290,11 +290,12 @@ function main(
     }
 
     if (argv[index] === '--message' || argv[index].startsWith('--message=')) {
+      const equalsForm = argv[index].startsWith('--message=');
       const value = argv[index] === '--message'
         ? argv[index + 1]
         : argv[index].slice('--message='.length);
       const normalizedValue = value && value.trim();
-      if (!normalizedValue || normalizedValue.startsWith('--')) {
+      if (!normalizedValue || (!equalsForm && normalizedValue.startsWith('--'))) {
         writeError('The --message option requires a non-empty value.');
         return 2;
       }
@@ -306,10 +307,11 @@ function main(
     }
 
     if (argv[index] === '--separator' || argv[index].startsWith('--separator=')) {
+      const equalsForm = argv[index].startsWith('--separator=');
       separator = argv[index] === '--separator'
         ? argv[index + 1]
         : argv[index].slice('--separator='.length);
-      if (separator === undefined || separator.startsWith('--')) {
+      if (separator === undefined || (!equalsForm && separator.startsWith('--'))) {
         writeError('The --separator option requires a value.');
         return 2;
       }
@@ -330,11 +332,14 @@ function main(
     }
 
     if (argv[index] === '--name' || argv[index] === '-n' || argv[index].startsWith('--name=')) {
+      const equalsForm = argv[index].startsWith('--name=');
       const value = argv[index] === '--name' || argv[index] === '-n'
         ? argv[index + 1]
         : argv[index].slice('--name='.length);
       let normalizedValue;
+      let valueFromInput = false;
       if (value === '-') {
+        valueFromInput = true;
         try {
           normalizedValue = readInput().trim();
         } catch (error) {
@@ -344,7 +349,10 @@ function main(
       } else {
         normalizedValue = value && value.trim();
       }
-      if (!normalizedValue || normalizedValue.startsWith('--')) {
+      if (
+        !normalizedValue
+        || (!equalsForm && !valueFromInput && normalizedValue.startsWith('--'))
+      ) {
         writeError('The --name option requires a non-empty value.');
         return 2;
       }

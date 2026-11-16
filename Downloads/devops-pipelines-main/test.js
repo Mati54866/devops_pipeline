@@ -83,6 +83,20 @@ test('rejects empty equals-form message options', () => {
   assert.match(errors[0], /requires a non-empty value/);
 });
 
+test('accepts equals-form values that begin with dashes', () => {
+  const messages = [];
+  assert.equal(main(['--message=--deploy'], (message) => messages.push(message)), 0);
+  assert.equal(messages.at(-1), '--deploy');
+
+  const name = [];
+  assert.equal(main(['--name=--Ada'], (message) => name.push(message)), 0);
+  assert.equal(name[0], 'Hello --Ada!');
+
+  const separator = [];
+  assert.equal(main(['--separator=--'], (message) => separator.push(message)), 0);
+  assert.deepEqual(separator, [getMessages().join('--')]);
+});
+
 test('joins text output with a custom separator', () => {
   const output = [];
   assert.equal(main(['--separator', ' | '], (message) => output.push(message)), 0);
