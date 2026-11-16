@@ -645,6 +645,92 @@ test('loads validated defaults from a JSON config file', () => {
   }
 });
 
+test('validates a config file without generating greeting output', () => {
+  const configPath = path.join(os.tmpdir(), `devops-config-check-${process.pid}.json`);
+  const output = [];
+  const errors = [];
+  try {
+    fs.writeFileSync(configPath, JSON.stringify({ name: 'Grace' }), 'utf8');
+    assert.equal(main(
+      ['--validate-config', '--config', configPath],
+      (message) => output.push(message),
+      (message) => errors.push(message)
+    ), 0);
+    assert.deepEqual(output, [`Configuration file "${configPath}" is valid.`]);
+    assert.deepEqual(errors, []);
+  } finally {
+    fs.rmSync(configPath, { force: true });
+  }
+});
+
+test('uses DEVOPS_CONFIG when validating a config file', () => {
+  const configPath = path.join(os.tmpdir(), `devops-config-check-env-${process.pid}.json`);
+  const output = [];
+  try {
+    fs.writeFileSync(configPath, JSON.stringify({ format: 'ndjson' }), 'utf8');
+    assert.equal(main(
+      ['--validate-config'],
+      (message) => output.push(message),
+      () => {},
+      { DEVOPS_CONFIG: configPath }
+    ), 0);
+    assert.deepEqual(output, [`Configuration file "${configPath}" is valid.`]);
+  } finally {
+    fs.rmSync(configPath, { force: true });
+  }
+});
+
+test('requires a config path when validating configuration', () => {
+  const output = [];
+  const errors = [];
+  assert.equal(main(
+    ['--validate-config'],
+    (message) => output.push(message),
+    (message) => errors.push(message)
+  ), 2);
+  assert.deepEqual(output, []);
+  assert.match(errors[0], /requires --config or DEVOPS_CONFIG/);
+});
+
+test('rejects invalid config without generating greeting output in validation mode', () => {
+  const configPath = path.join(os.tmpdir(), `devops-config-check-invalid-${process.pid}.json`);
+  const output = [];
+  const errors = [];
+  try {
+    fs.writeFileSync(configPath, JSON.stringify({ unsupported: true }), 'utf8');
+    assert.equal(main(
+      ['--validate-config', `--config=${configPath}`],
+      (message) => output.push(message),
+      (message) => errors.push(message)
+    ), 2);
+    assert.deepEqual(output, []);
+    assert.match(errors[0], /Unknown config option: unsupported/);
+  } finally {
+    fs.rmSync(configPath, { force: true });
+  }
+});
+
+test('rejects output options in config validation mode', () => {
+  const configPath = path.join(os.tmpdir(), `devops-config-check-options-${process.pid}.json`);
+  const outputPath = path.join(os.tmpdir(), `devops-config-check-output-${process.pid}.txt`);
+  const output = [];
+  const errors = [];
+  try {
+    fs.writeFileSync(configPath, '{}', 'utf8');
+    assert.equal(main(
+      ['--validate-config', '--config', configPath, '--output', outputPath],
+      (message) => output.push(message),
+      (message) => errors.push(message)
+    ), 2);
+    assert.deepEqual(output, []);
+    assert.match(errors[0], /cannot be used with --validate-config/);
+    assert.equal(fs.existsSync(outputPath), false);
+  } finally {
+    fs.rmSync(configPath, { force: true });
+    fs.rmSync(outputPath, { force: true });
+  }
+});
+
 test('trims whitespace around configured messages', () => {
   const configPath = path.join(os.tmpdir(), `devops-config-trim-${process.pid}.json`);
   try {

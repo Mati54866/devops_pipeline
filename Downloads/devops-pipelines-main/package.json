@@ -13,7 +13,8 @@
     "start:ndjson": "node index.js --format ndjson",
     "run": "node index.js",
     "check": "node --check index.js && node --check test.js",
-    "validate": "npm run check && npm test",
+    "validate:config": "node index.js --validate-config",
+    "validate": "npm run check && npm run validate:config -- --config devops.config.example.json && npm test",
     "test": "node --test"
   },
   "engines": {

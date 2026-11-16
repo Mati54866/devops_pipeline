@@ -7,6 +7,7 @@ const HELP_TEXT = [
   '  -h, --help                 Show this help.',
   '  -v, --version              Show the package version.',
   '  --config <file>            Load JSON defaults for name, messages, format, separator, and uppercase.',
+  '  --validate-config          Validate the selected config file without generating output.',
   '  -n, --name <name|->        Set the greeting name; use - to read it from standard input.',
   '  --message <text>           Add a message (repeatable).',
   '  --format <format>          Select text, json, or ndjson output.',
@@ -142,6 +143,26 @@ function main(
       writeError('Config option "uppercase" must be a boolean.');
       return 2;
     }
+  }
+
+  if (argv.includes('--validate-config')) {
+    for (let index = 0; index < argv.length; index += 1) {
+      if (argv[index] === '--validate-config' || argv[index].startsWith('--config=')) {
+        continue;
+      }
+      if (argv[index] === '--config') {
+        index += 1;
+        continue;
+      }
+      writeError(`Option "${argv[index]}" cannot be used with --validate-config.`);
+      return 2;
+    }
+    if (!configPath) {
+      writeError('--validate-config requires --config or DEVOPS_CONFIG.');
+      return 2;
+    }
+    write(`Configuration file "${configPath}" is valid.`);
+    return 0;
   }
 
   let name = (env.DEVOPS_GREETING_NAME || '').trim() || config.name?.trim() || 'DevOps';
