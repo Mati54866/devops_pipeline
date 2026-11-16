@@ -636,6 +636,31 @@ test('accepts an equals-form output path', () => {
   }
 });
 
+test('writes text, JSON, and NDJSON to stdout when the output path is -', () => {
+  for (const [format, expected] of [
+    ['text', getMessages()],
+    ['json', [JSON.stringify(getMessages())]],
+    ['ndjson', getMessages().map((message) => JSON.stringify(message))]
+  ]) {
+    const output = [];
+    const args = format === 'text'
+      ? ['--output', '-']
+      : ['--format', format, '--output', '-'];
+    assert.equal(main(args, (message) => output.push(message)), 0);
+    assert.deepEqual(output, expected);
+  }
+});
+
+test('rejects append when output is standard output', () => {
+  const errors = [];
+  assert.equal(main(
+    ['--output', '-', '--append'],
+    () => {},
+    (message) => errors.push(message)
+  ), 2);
+  assert.match(errors[0], /cannot be used with standard output/);
+});
+
 test('writes JSON output to a file without emitting stdout', () => {
   const outputPath = path.join(os.tmpdir(), `devops-json-output-${process.pid}.json`);
   const output = [];

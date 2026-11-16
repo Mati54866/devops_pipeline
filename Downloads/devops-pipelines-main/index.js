@@ -15,7 +15,7 @@ const HELP_TEXT = [
   '  --separator <text>         Join text output with a custom separator.',
   '  --uppercase                Convert output messages to uppercase.',
   '  --no-uppercase             Preserve message casing.',
-  '  --output <file>            Write output to a file.',
+  '  --output <file|->          Write output to a file, or stdout when set to -.',
   '  --append                   Append output instead of replacing the file.',
   '  --github-output            Write a messages output for GitHub Actions.',
   '  --github-summary           Append a summary to the GitHub Actions step summary.',
@@ -367,6 +367,10 @@ function main(
     writeError('The --append option cannot be combined with GitHub Actions output options.');
     return 2;
   }
+  if (append && outputFile === '-') {
+    writeError('The --append option cannot be used with standard output.');
+    return 2;
+  }
   if (append && !outputFile) {
     writeError('The --append option requires --output.');
     return 2;
@@ -441,7 +445,7 @@ function main(
     const output = format === 'json'
       ? `${JSON.stringify(messages)}\n`
       : `${messages.map((message) => JSON.stringify(message)).join('\n')}\n`;
-    if (outputFile) {
+    if (outputFile && outputFile !== '-') {
       try {
         const writeOutput = append ? fs.appendFileSync : fs.writeFileSync;
         const lineBreak = append && format === 'ndjson' && needsAppendLineBreak(outputFile)
@@ -460,7 +464,7 @@ function main(
     return 0;
   }
 
-  if (outputFile) {
+  if (outputFile && outputFile !== '-') {
     const output = separator === undefined
       ? messages.join('\n')
       : messages.join(separator);

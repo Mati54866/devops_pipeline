@@ -35,6 +35,7 @@ npm start -- --name Ada --message "Build started" --message "Deploy complete"
 # Choose a machine-readable format
 npm start -- --format json
 npm start -- --format ndjson
+npm start -- --format json --output -
 
 # Write to a file, or append text/NDJSON to an existing file
 npm start -- --output run.log
@@ -48,7 +49,8 @@ npm run validate:config -- --config devops.config.example.json
 printf "Ada\n" | npm start -- --name -
 ```
 
-Use `npm start -- --help` for the complete option list. The CLI supports
+Use `--output -` to write explicitly to standard output. Use
+`npm start -- --help` for the complete option list. The CLI supports
 repeatable `--message`, `--separator`, `--uppercase`, and `--no-uppercase`
 options. JSON array output cannot be appended; text and NDJSON output can.
 
@@ -84,7 +86,7 @@ Config values are used when neither is set.
 | `DEVOPS_UPPERCASE` | `true` or `false` |
 | `DEVOPS_OUTPUT` | Default output file path |
 
-The [` .env.example`](./.env.example) file lists the supported variables.
+The [`.env.example`](./.env.example) file lists the supported variables.
 Environment variables are read from the process environment; the CLI does not
 load `.env` files automatically.
 
