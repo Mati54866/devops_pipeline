@@ -5,3 +5,4 @@ coverage/
 .env.*
 !.env.example
 **/devops.config.local.json
+Downloads/devops-pipelines-main/run.log
